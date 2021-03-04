@@ -56,7 +56,12 @@ def create_all():
             first_name = 'Super'
             last_name = 'Admin'
             email = 'foundation-admin@devpipeline.com'
-            password = 'N01t4dnU0f'
+            newpw = ''
+            while newpw == '' or newpw is None:
+                newpw = input(' Enter a password for Super Admin:')
+
+            #password = 'N01t4dnU0f'
+            password = newpw
             phone = '3853090807'
             active = True
             org_id = org_data.org_id
