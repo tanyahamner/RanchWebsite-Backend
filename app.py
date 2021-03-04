@@ -26,6 +26,51 @@ def create_all():
     with app.app_context():
         db.create_all()
 
+        # Create DevPipeline Organization
+        print("Querying for DevPipeline organization...")
+        org_data = db.session.query(Organization).filter(Organization.name == "DevPipeline").first()
+        if org_data == None:
+            print("DevPipeline organization not found. Creating DevPipeline Organization in database...")
+            name = 'DevPipeline'
+            address = '518 East 800 North, Suite C'
+            city = 'Orem'
+            state = 'Utah'
+            zip_code = '84097'
+            phone = '3853090807'
+            active = True
+            created_date = datetime.now()
+            
+            org_data = Organization(name, address, city, state, zip_code, phone, created_date, active)
+
+            db.session.add(org_data)
+            db.session.commit()
+        else:
+            print("DevPipeline Organization found!")
+        
+        
+        # Create default super-admin user
+        print("Querying for Super Admin user...")
+        user_data = db.session.query(AppUser).filter(AppUser.email == 'foundation-admin@devpipeline.com').first()
+        if user_data == None:
+            print("Super Admin not found! Creating foundation-admin@devpipeline user...")
+            first_name = 'Super'
+            last_name = 'Admin'
+            email = 'foundation-admin@devpipeline.com'
+            password = 'N01t4dnU0f'
+            phone = '3853090807'
+            active = True
+            org_id = org_data.org_id
+            created_date = datetime.now()
+            role = 'super-admin'
+            
+            hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
+            record = AppUser(first_name, last_name, email, hashed_password, phone, created_date, org_id, role, active)
+
+            db.session.add(record)
+            db.session.commit()
+        else:
+            print("Super Admin user found!")
+
 def create_app(config_file=None):
    """
    Default application factory
@@ -44,7 +89,7 @@ def create_app(config_file=None):
    app = Flask(__name__)
 #  TODO: database url needs to be in env variable
    database_host = "127.0.0.1:5432"
-   database_name = "app"
+   database_name = "foundation"
    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgres://{database_host}/{database_name}'
    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
    
