@@ -357,18 +357,18 @@ def get_organization_by_search(search_term, internal_call=False, p_auth_info=Non
     
     search_term = search_term.lower()
     
-    org_data = None
+    org_query = db.session.query(Organization)\
+        .filter(db.or_( \
+            db.func.lower(Organization.name).contains(search_term), \
+            Organization.phone.contains(search_term), \
+            db.func.lower(Organization.city).contains(search_term), \
+            db.func.lower(Organization.state).contains(search_term)\
+        ))
+
     if auth_info.user.role == 'admin' or auth_info.user.role == 'user':
-        org_data = db.session.query(Organization)\
-        .filter(db.func.lower(Organization.name).contains(search_term))\
-        .filter(Organization.org_id == auth_info.user.org_id)\
-        .order_by(Organization.name.asc())\
-        .all()
-    else:
-        org_data = db.session.query(Organization)\
-            .filter(db.func.lower(Organization.name).contains(search_term))\
-            .order_by(Organization.name.asc())\
-            .all()
+        org_query.filter(Organization.org_id == auth_info.user.org_id)\
+    
+    org_data = org_query.order_by(Organization.name.asc()).all()
     if (internal_call):
         return organizations_schema.dump(org_data)
     
