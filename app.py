@@ -15,7 +15,6 @@ from models.auth_tokens import auth_token_schema, AuthToken, AuthTokenSchema
 from util.validate_uuid4 import validate_uuid4
 from util.foundation_utils import strip_phone
 
-
 import os
 from os.path import abspath, dirname, isfile, join
 from datetime import datetime, timedelta
