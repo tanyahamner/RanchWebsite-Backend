@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -19,6 +19,7 @@ import os
 from os.path import abspath, dirname, isfile, join
 from datetime import datetime, timedelta
 from util.date_range import DateRange
+import endpoints
 
 
 def create_all():
@@ -162,106 +163,20 @@ def validate_auth_token(auth_token):
 
 
 @app.route("/organization/add", methods=["POST"])
-def insert_organization():
-    if request.content_type == "application/json":
-        auth_info = validate_auth_token(request.headers.get("auth_token"))
-        if not auth_info:
-            return jsonify("Access Denied"), 401
-
-        post_data = request.get_json()
-        name = post_data.get('name')
-        address = post_data.get('address')
-        city = post_data.get('city')
-        state = post_data.get('state')
-        zip_code = post_data.get('zip_code')
-        phone = post_data.get('phone')
-        active = post_data.get('active')
-        created_date = datetime.now()
-        if active == None:
-            active = True
-
-        stripped_phone = strip_phone(phone)
-        org_data = Organization(name, address, city, state, zip_code, stripped_phone, created_date, active)
-
-        db.session.add(org_data)
-        db.session.commit()
-
-        return jsonify(organization_schema.dump(org_data)), 201
-    else:
-        return jsonify("ERROR: request must be in JSON format"), 400
+def insert_organization() -> Response:
+    return endpoints.organization_add(request)
 
 @app.route("/organization/update", methods=["POST"])
-def update_organization():
-    if request.content_type == "application/json":
-        auth_info = validate_auth_token(request.headers.get("auth_token"))
-        if not auth_info:
-            return jsonify("Access Denied"), 401
-
-    if request.content_type == "application/json":
-        post_data = request.get_json()
-        org_id = post_data.get("org_id")
-        if org_id == None:
-            return jsonify("ERROR: org_id missing"), 400
-        name = post_data.get('name')
-        address = post_data.get('address')
-        city = post_data.get('city')
-        state = post_data.get('state')
-        zip_code = post_data.get('zip_code')
-        phone = post_data.get('phone')
-        active = post_data.get('active')
-        if active == None:
-            active = True
-
-        org_data = db.session.query(Organization).filter(Organization.org_id == org_id).first()
-        org_data.name = name
-        org_data.address = address
-        org_data.city = city
-        org_data.state = state
-        org_data.zip_code = zip_code
-        org_data.phone = strip_phone(phone)
-        org_data.active = active
-
-        db.session.commit()
-
-        return jsonify(organization_schema.dump(org_data)), 200
-    else:
-        return jsonify("ERROR: request must be in JSON format"), 400
+def update_organization() -> Response:
+    return endpoints.organization_update(request)
 
 @app.route("/organization/get")
-def get_all_organizations():
-    auth_info = validate_auth_token(request.headers.get("auth_token"))
-    if not auth_info:
-        return jsonify("Access Denied"), 401
-
-    all_organizations = []
-
-    if auth_info.user.role != 'super-admin':
-        all_organizations = db.session.query(Organization).filter(Organization.org_id == auth_info.user.org_id).order_by(Organization.name.asc()).all()
-    else:
-        all_organizations = db.session.query(Organization).order_by(Organization.name.asc()).all()
-    
-    return jsonify(organizations_schema.dump(all_organizations))
+def get_all_organizations() -> Response:
+    return endpoints.organizations_get(request)
 
 @app.route("/organization/get/<org_id>")
-def get_organization_by_id(org_id):
-    auth_info = validate_auth_token(request.headers.get("auth_token"))
-    if not auth_info:
-        return jsonify("Access Denied"), 401
-
-    if validate_uuid4(org_id) == False:
-        return jsonify("Invalid org ID"), 404
-
-    org_query = db.session.query(Organization).filter(Organization.org_id == org_id)
-
-    if auth_info.user.role != 'super-admin':
-        org_query = org_query.filter(Organization.org_id == auth_info.user.org_id)
-    
-    org_data = org_query.first()
-
-    if org_data:
-        return jsonify(organization_schema.dump(org_data))
-
-    return jsonify(f"Organization with org_id {org_id} not found"), 404
+def get_organization_by_id(org_id) -> Response:
+    return endpoints.organization_get_by_id(request, org_id)
 
 @app.route("/organization/delete/<org_id>", methods=["DELETE"])
 def delete_organization(org_id):
@@ -744,6 +659,14 @@ def remove_auth_token():
         return jsonify("User logged out"), 200
     else:
         return jsonify("ERROR: request must be in JSON format")
+
+@app.route("/user/pw_change_request", methods=["POST"])
+def pw_change_request() -> Response:
+    return endpoints.forgot_password.pw_change_request(request)
+
+@app.route("/user/forgot_password_change", methods=["POST"])
+def forgot_password_change() -> Response:
+    return endpoints.forgot_password.forgot_password_change(request, bcrypt)
 
 if __name__ == "__main__":
     app.run(debug=True)
