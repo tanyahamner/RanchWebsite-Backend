@@ -26,8 +26,7 @@ def failure_response():
     return Response("Authentication Required", 401)
 
 
-
-def authenticate(func:Callable[[request], Response]):
+def authenticate(func):
     @functools.wraps(func)
     def wrapper_authenticate(*args, **kwargs):
         # print(args)
@@ -40,10 +39,12 @@ def authenticate(func:Callable[[request], Response]):
 
     return wrapper_authenticate
 
-def authenticate_return_auth(func:Callable[[request], Response]):
+def authenticate_return_auth(func):
     @functools.wraps(func)
     def wrapper_authenticate(*args, **kwargs):
+        # print("---------------")
         # print(args)
+        # print('^^^^^^^^^^^^^^^')
         auth_info = validate_auth_token(args[0])
         kwargs["auth_info"] = auth_info
         return (
