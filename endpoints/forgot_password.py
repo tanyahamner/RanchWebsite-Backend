@@ -31,9 +31,9 @@ def forgot_password_change(req:flask.Request, bcrypt) -> flask.Response:
     return flask.make_response(flask.jsonify({"message": "password changed"}), 200)
 
 
-def pw_change_request(request):
+def pw_change_request(req:flask.Request) -> flask.Response:
     # protect user roles
-    post_data = request.get_json()
+    post_data = req.get_json()
     email = post_data.get('email')
     # TEMPLATE_ID='d-961220b709474aaba564bffa65a38c58'
 
@@ -45,7 +45,7 @@ def pw_change_request(request):
             token_record = PWResetToken(user.user_id, expiration, token)
             db.session.add(token_record)
             db.session.commit()
-            send_email(email, "GeoTagger Password Update Request", '''<div style="background-color:white;color:#3e5c76;"><h1>Hello '''+user.first_name.capitalize()+ ''',</h1><p>You requested a password reset for your GeoTagger.io account.
+            send_email(email, "Password Update Request", '''<div style="background-color:white;color:#3e5c76;"><h1>Hello '''+user.first_name.capitalize()+ ''',</h1><p>You requested a password reset for your GeoTagger.io account.
             </p><p>Click the link below or copy it into your browser to reset your password</p></div>'''"<p>"+reset_pw_link+"</p>")
 
         return jsonify("email sent"), 201
@@ -53,7 +53,7 @@ def pw_change_request(request):
     except Exception as inst:
         return jsonify(inst.args[0],inst), 400
 
-def get_reset_link(user_id):
+def get_reset_link(req:flask.Request, user_id) -> flask.Response:
     expiration_datetime = datetime.utcnow() + timedelta(minutes=30)
     expiration_string = expiration_datetime.strftime("%Y-%m-%dT%H:%M:%S")
     token = str(uuid.uuid4())
