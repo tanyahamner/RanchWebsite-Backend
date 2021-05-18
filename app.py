@@ -249,7 +249,7 @@ def auth_token_remove():
 
 @app.route("/user/pw_change_request", methods=["POST"])
 def pw_change_request() -> Response:
-    return endpoints.forgot_password.pw_change_request(request)
+    return endpoints.forgot_password.pw_change_request(request, active)
 
 @app.route("/user/forgot_password_change", methods=["POST"])
 def forgot_password_change(bcrypt) -> Response:

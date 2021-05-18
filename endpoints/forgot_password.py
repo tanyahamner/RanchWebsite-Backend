@@ -31,7 +31,7 @@ def forgot_password_change(req:flask.Request, bcrypt) -> flask.Response:
     return flask.make_response(flask.jsonify({"message": "password changed"}), 200)
 
 
-def pw_change_request(req:flask.Request) -> flask.Response:
+def pw_change_request(req:flask.Request, active) -> flask.Response:
     # protect user roles
     post_data = req.get_json()
     email = post_data.get('email')
