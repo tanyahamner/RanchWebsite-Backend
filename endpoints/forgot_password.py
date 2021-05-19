@@ -37,18 +37,20 @@ def pw_change_request(req:flask.Request) -> flask.Response:
     post_data = req.get_json()
     email = post_data.get('email')
     # TEMPLATE_ID='d-961220b709474aaba564bffa65a38c58'
-
+    print(email)
     try:
 
         user = db.session.query(AppUser).filter(AppUser.email == email).filter(AppUser.active == True).first()
         if user: 
-            reset_pw_link, token, expiration = get_reset_link(user.user_id)
+            reset_pw_link, token, expiration = get_reset_link(req, user.user_id)
             token_record = PWResetToken(user.user_id, expiration, token)
+            print(token_record)
             db.session.add(token_record)
             db.session.commit()
             send_email(email, "Password Update Request", '''<div style="background-color:white;color:#3e5c76;"><h1>Hello '''+user.first_name.capitalize()+ ''',</h1><p>You requested a password reset for your GeoTagger.io account.
             </p><p>Click the link below or copy it into your browser to reset your password</p></div>'''"<p>"+reset_pw_link+"</p>")
-
+        else:
+            return jsonify("user not found"), 404
         return jsonify("email sent"), 201
 
     except Exception as inst:

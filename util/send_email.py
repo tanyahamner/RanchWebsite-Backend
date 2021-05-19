@@ -3,7 +3,7 @@ import os
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
 API_KEY = os.environ.get('SENDGRID_API_KEY', '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')
-FROM_EMAIL = os.environ.get('SENDGRID_FROM_EMAIL', 'autumn.e.gehring@gmail.com')
+FROM_EMAIL = os.environ.get('SENDGRID_FROM_EMAIL', 'brendoncrave@devpipeline.com')
 
 def send_email(to_email, subject, content):
 
