@@ -252,7 +252,7 @@ def pw_change_request() -> Response:
     return endpoints.forgot_password.pw_change_request(request)
 
 @app.route("/user/forgot_password_change", methods=["POST"])
-def forgot_password_change(bcrypt) -> Response:
+def forgot_password_change() -> Response:
     return endpoints.forgot_password.forgot_password_change(request, bcrypt)
 
 if __name__ == "__main__":
