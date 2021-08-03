@@ -6,7 +6,7 @@ from lib.authenticate import authenticate_return_auth
 from util.validate_uuid4 import validate_uuid4
 
 @authenticate_return_auth
-def user_delete(req:flask.Request, auth_info) -> flask.Response:
+def user_delete(req:flask.Request, user_id, auth_info) -> flask.Response:
     if validate_uuid4(user_id) == False:
         return jsonify("Invalid user ID"), 404
     
