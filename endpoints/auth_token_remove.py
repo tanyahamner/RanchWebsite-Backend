@@ -7,7 +7,7 @@ from util.validate_uuid4 import validate_uuid4
 
 def auth_token_remove(req:flask.Request) -> flask.Response:
     if req.content_type == "application/json":
-        post_data = request.get_json()
+        post_data = req.get_json()
         user_id = post_data.get("user_id")
         auth_token = post_data.get("auth_token")
         if (user_id == None or user_id == '') and (auth_token == None or auth_token == ''):
