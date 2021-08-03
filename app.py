@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
+import sys
 
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -25,6 +26,9 @@ import endpoints
 def create_all():
     with app.app_context():
         db.create_all()
+        # Echoing the command-line parameters
+        for arg in range(len(sys.argv[1:])):
+            print(sys.argv[arg + 1])
 
         # Create DevPipeline Organization
         print("Querying for DevPipeline organization...")
@@ -256,4 +260,5 @@ def forgot_password_change() -> Response:
     return endpoints.forgot_password.forgot_password_change(request, bcrypt)
 
 if __name__ == "__main__":
+    create_all()
     app.run(debug=True)
