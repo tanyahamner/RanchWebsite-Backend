@@ -20,4 +20,4 @@ from .user_deactivate import user_deactivate
 from .users_get_by_search import users_get_by_search
 from .auth_token_add import auth_token_add
 from .auth_token_remove import auth_token_remove
-from .pic_receive import pic_receive
+from .pic_add import pic_add

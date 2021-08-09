@@ -256,8 +256,8 @@ def forgot_password_change() -> Response:
     return endpoints.forgot_password.forgot_password_change(request, bcrypt)
 
 @app.route("/receive", methods=["POST"])
-def pic_receive(pic_bytes) -> Response:
-    return endpoints.pic_receive.pic_receive(request, pic_bytes)
+def pic_add() -> Response:
+    return endpoints.pic_add(request)
 
 
 
