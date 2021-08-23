@@ -259,6 +259,12 @@ def pw_change_request() -> Response:
 def forgot_password_change() -> Response:
     return endpoints.forgot_password.forgot_password_change(request, bcrypt)
 
+@app.route("/receive", methods=["POST"])
+def pic_add() -> Response:
+    return endpoints.pic_add(request)
+
+
+
 if __name__ == "__main__":
     create_all()
     app.run(debug=True)
