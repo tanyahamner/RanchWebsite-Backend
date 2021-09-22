@@ -3,6 +3,7 @@ import flask
 from db import db
 from models.organizations import Organization, organization_schema
 from models.auth_tokens import AuthToken, auth_token_schema
+# from models.app_users import AppUser
 from lib.authenticate import authenticate_return_auth
 from util.validate_uuid4 import validate_uuid4
 
@@ -21,15 +22,15 @@ def organization_deactivate_by_id(req:flask.Request, org_id, auth_info) -> flask
         db.session.commit()
 
         # Remove all auth records for anyone from that company
-        auth_record_query = db.session.query(AuthToken)\
-            .join(AppUser, AuthToken.user_id == AppUser.user_id)\
-            .filter(AppUser.org_id == org_id)
+        # auth_record_query = db.session.query(AuthToken)\
+        #     .join(AppUser, AuthToken.user_id == AppUser.user_id)\
+        #     .filter(AppUser.org_id == org_id)
         
-        auth_records = auth_record_query.all()
-        for auth_record in auth_records:
-            db.session.delete(auth_record)
+        # auth_records = auth_record_query.all()
+        # for auth_record in auth_records:
+        #     db.session.delete(auth_record)
 
-        db.session.commit()
+        # db.session.commit()
 
         return jsonify(organization_schema.dump(org_data)), 200
 
