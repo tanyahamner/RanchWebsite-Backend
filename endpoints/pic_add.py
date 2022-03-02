@@ -3,7 +3,7 @@ import flask
 import glob, os
 import uuid
 from db import db
-from models.app_users import AppUser, user_schema
+from models.app_users import AppUsers, user_schema
 from models.pic_reference import PicReference, pic_schema
 from PIL import Image
 import io

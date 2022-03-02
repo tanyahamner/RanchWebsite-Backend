@@ -1,7 +1,7 @@
 import flask
 from db import db
-from models.app_users import user_schema, AppUser, AppUserSchema
-from models.pw_reset_token import PWResetToken
+from models.app_users import user_schema, AppUsers, AppUsersSchema
+from models.pw_reset_token import PWResetTokens
 from util.validate_uuid4 import validate_uuid4
 from flask import jsonify
 from util.send_email import send_email
@@ -14,12 +14,12 @@ def forgot_password_change(req:flask.Request, bcrypt) -> flask.Response:
     # req will now be a json object with the requested data
     req = req.get_json()
     token = req["token"]
-    pw_reset_token = db.session.query(PWResetToken).filter(PWResetToken.user_id == req["user_id"]).filter(PWResetToken.token == token).filter(PWResetToken.expiration > datetime.utcnow()).first()
+    pw_reset_token = db.session.query(PWResetTokens).filter(PWResetTokens.user_id == req["user_id"]).filter(PWResetToken.token == token).filter(PWResetToken.expiration > datetime.utcnow()).first()
     
     if not pw_reset_token:
         return jsonify("Expired password reset link."), 401
 
-    user_db = db.session.query(AppUser).filter(AppUser.user_id == req["user_id"]).first()
+    user_db = db.session.query(AppUsers).filter(AppUsers.user_id == req["user_id"]).first()
     if not req["new_password"] or len(req["new_password"]) < 1:
         return jsonify("Cannot set to blank password."), 400
 
@@ -40,10 +40,10 @@ def pw_change_request(req:flask.Request) -> flask.Response:
     print(email)
     try:
 
-        user = db.session.query(AppUser).filter(AppUser.email == email).filter(AppUser.active == True).first()
+        user = db.session.query(AppUsers).filter(AppUsers.email == email).filter(AppUsers.active == True).first()
         if user: 
             reset_pw_link, token, expiration = get_reset_link(req, user.user_id)
-            token_record = PWResetToken(user.user_id, expiration, token)
+            token_record = PWResetTokens(user.user_id, expiration, token)
             print(token_record)
             db.session.add(token_record)
             db.session.commit()

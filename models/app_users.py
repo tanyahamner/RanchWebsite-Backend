@@ -6,7 +6,8 @@ from db import db
 import marshmallow as ma
 from .organizations import OrganizationSchema
 
-class AppUser(db.Model):
+class AppUsers(db.Model):
+    __tablename__= "AppUsers"
     user_id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     first_name = db.Column(db.String(), nullable = False)
     last_name = db.Column(db.String(), nullable = False)
@@ -31,10 +32,10 @@ class AppUser(db.Model):
         self.active = active
    
    
-class AppUserSchema(ma.Schema):
+class AppUsersSchema(ma.Schema):
     class Meta:
         fields = ['user_id','first_name', 'last_name', 'email', 'password', 'phone', 'created_date', 'org_id', 'organization', 'role', 'active']
     organization = ma.fields.Nested(OrganizationSchema(only=("name","active")))
     
-user_schema = AppUserSchema()
-users_schema = AppUserSchema(many=True)
+user_schema = AppUsersSchema()
+users_schema = AppUsersSchema(many=True)

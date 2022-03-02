@@ -1,9 +1,9 @@
 from flask import jsonify
 import flask
 from db import db
-from models.organizations import Organization, organization_schema
-from models.app_users import AppUser, user_schema
-from models.auth_tokens import AuthToken, auth_token_schema
+from models.organizations import Organizations, organizations_schema
+from models.app_users import AppUsers, user_schema
+from models.auth_tokens import AuthTokens, auth_token_schema
 from lib.authenticate import authenticate_return_auth
 from datetime import datetime, timedelta
 from util.validate_uuid4 import validate_uuid4
@@ -20,12 +20,12 @@ def auth_token_add(req:flask.Request, bcrypt) -> flask.Response:
 
         now_datetime = datetime.utcnow()
         expiration_datetime = datetime.utcnow() + timedelta(hours=12)
-        user_data = db.session.query(AppUser)\
-            .filter(AppUser.email == email)\
-            .filter(AppUser.active).first()
+        user_data = db.session.query(AppUsers)\
+            .filter(AppUsers.email == email)\
+            .filter(AppUsers.active).first()
 
         if user_data:
-            if user_data.organization.active == False:
+            if user_data.Organizations.active == False:
                 return jsonify("Your account has been deactivated. Please contact your account executive."), 403
 
             is_password_valid = bcrypt.check_password_hash(user_data.password, password)

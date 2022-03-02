@@ -9,9 +9,9 @@ import uuid
 from db import db, init_db
 from flask_marshmallow import Marshmallow
 
-from models.organizations import organization_schema, organizations_schema, Organization, OrganizationSchema
-from models.app_users import user_schema, users_schema, AppUser, AppUserSchema
-from models.auth_tokens import auth_token_schema, AuthToken, AuthTokenSchema
+from models.organizations import organization_schema, organizations_schema, Organizations, OrganizationsSchema
+from models.app_users import user_schema, users_schema, AppUsers, AppUsersSchema
+from models.auth_tokens import auth_token_schema, AuthTokens, AuthTokensSchema
 
 from util.validate_uuid4 import validate_uuid4
 from util.foundation_utils import strip_phone
@@ -32,7 +32,7 @@ def create_all():
 
         # Create DevPipeline Organization
         print("Querying for DevPipeline organization...")
-        org_data = db.session.query(Organization).filter(Organization.name == "DevPipeline").first()
+        org_data = db.session.query(Organizations).filter(Organizations.name == "DevPipeline").first()
         if org_data == None:
             print("DevPipeline organization not found. Creating DevPipeline Organization in database...")
             name = 'DevPipeline'
@@ -44,7 +44,7 @@ def create_all():
             active = True
             created_date = datetime.now()
             
-            org_data = Organization(name, address, city, state, zip_code, phone, created_date, active)
+            org_data = Organizations(name, address, city, state, zip_code, phone, created_date, active)
 
             db.session.add(org_data)
             db.session.commit()
@@ -54,7 +54,7 @@ def create_all():
         
         # Create default super-admin user
         print("Querying for Super Admin user...")
-        user_data = db.session.query(AppUser).filter(AppUser.email == 'foundation-admin@devpipeline.com').first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.email == 'foundation-admin@devpipeline.com').first()
         if user_data == None:
             print("Super Admin not found! Creating foundation-admin@devpipeline user...")
             first_name = 'Super'
@@ -73,7 +73,7 @@ def create_all():
             role = 'super-admin'
             
             hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
-            record = AppUser(first_name, last_name, email, hashed_password, phone, created_date, org_id, role, active)
+            record = AppUsers(first_name, last_name, email, hashed_password, phone, created_date, org_id, role, active)
 
             db.session.add(record)
             db.session.commit()

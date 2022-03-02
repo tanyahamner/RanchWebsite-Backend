@@ -1,7 +1,7 @@
 from flask import jsonify
 import flask
 from db import db
-from models.auth_tokens import AuthToken, auth_token_schema
+from models.auth_tokens import AuthTokens, auth_token_schema
 from lib.authenticate import authenticate_return_auth
 from util.validate_uuid4 import validate_uuid4
 

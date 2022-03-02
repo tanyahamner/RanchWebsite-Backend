@@ -1,7 +1,7 @@
 from flask import jsonify
 import flask
 from db import db
-from models.app_users import AppUser, user_schema
+from models.app_users import AppUsers, user_schema
 from lib.authenticate import authenticate_return_auth
 from util.foundation_utils import strip_phone
 from util.validate_uuid4 import validate_uuid4
@@ -25,11 +25,11 @@ def user_update(req:flask.Request, auth_info) -> flask.Response:
         
         user_data = None
         if auth_info.user.role == 'super-admin':
-            user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).first()
+            user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
         elif auth_info.user.role == 'admin':
-            user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).filter(AppUser.org_id == auth_info.user.org_id).first()
+            user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).filter(AppUsers.org_id == auth_info.user.org_id).first()
         elif auth_info.user.role == 'user' and str(user_id) == str(auth_info.user.user_id):
-            user_data = db.session.query(AppUser).filter(AppUser.user_id == auth_info.user.user_id).first()
+            user_data = db.session.query(AppUsers).filter(AppUsers.user_id == auth_info.user.user_id).first()
         
         if user_data:
             user_data.user_id = user_id
@@ -46,7 +46,7 @@ def user_update(req:flask.Request, auth_info) -> flask.Response:
             if role is not None:
                 if auth_info.user.role == 'admin' and role != 'super-admin':
                     if role == 'user':
-                        admins_in_org = db.session.query(AppUser).filter(AppUser.org_id == auth_info.user.org_id).all()
+                        admins_in_org = db.session.query(AppUsers).filter(AppUsers.org_id == auth_info.user.org_id).all()
                         if not admins_in_org or len(admins_in_org) <= 1:
                             return jsonify("Cannot downgrade role of last admin in organization"), 403
                     user_data.role = role
