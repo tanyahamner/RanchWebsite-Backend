@@ -63,10 +63,7 @@ def create_all():
             newpw = ''
             while newpw == '' or newpw is None:
                 newpw = input(' Enter a password for Super Admin:')
-
-            #password = 'N01t4dnU0f'
             password = newpw
-            phone = '3853090807'
             active = True
             org_id = org_data.org_id
             created_date = datetime.now()
@@ -161,7 +158,7 @@ ma  = Marshmallow(app)
 def validate_auth_token(auth_token):
     if auth_token is None or auth_token == "" or auth_token == 'not required':
         return False
-    auth_record = db.session.query(AuthToken).filter(AuthToken.auth_token == auth_token).filter(AuthToken.expiration > datetime.utcnow()).first()
+    auth_record = db.session.query(AuthTokens).filter(AuthTokens.auth_token == auth_token).filter(AuthTokens.expiration > datetime.utcnow()).first()
     
     return auth_record
 

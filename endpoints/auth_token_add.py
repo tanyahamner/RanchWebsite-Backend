@@ -32,9 +32,9 @@ def auth_token_add(req:flask.Request, bcrypt) -> flask.Response:
             if is_password_valid == False:
                 return jsonify("Invalid email/password"), 401
 
-            auth_data = db.session.query(AuthToken).filter(AuthToken.user_id == user_data.user_id).first()
+            auth_data = db.session.query(AuthTokens).filter(AuthTokens.user_id == user_data.user_id).first()
             if auth_data is None:
-                auth_data = AuthToken(user_data.user_id, expiration_datetime)
+                auth_data = AuthTokens(user_data.user_id, expiration_datetime)
                 db.session.add(auth_data)
             else:
                 # auth_record = db.session.query(AuthToken).filter(AuthToken.auth_token == auth_token).filter(AuthToken.expiration > datetime.utcnow()).first()
@@ -44,7 +44,7 @@ def auth_token_add(req:flask.Request, bcrypt) -> flask.Response:
                 if now_datetime < auth_data.expiration:
                     # Auth Expired
                     db.session.delete(auth_data)
-                    auth_data = AuthToken(user_data.user_id, expiration_datetime)
+                    auth_data = AuthTokens(user_data.user_id, expiration_datetime)
                     db.session.add(auth_data)
                 else:
                     auth_data.expiration = expiration_datetime

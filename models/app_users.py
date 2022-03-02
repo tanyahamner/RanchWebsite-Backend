@@ -13,9 +13,8 @@ class AppUsers(db.Model):
     last_name = db.Column(db.String(), nullable = False)
     email = db.Column(db.String(), nullable = False, unique = True)
     password = db.Column(db.String(), nullable = False)
-    phone = db.Column(db.String())
     active = db.Column(db.Boolean(), nullable=False, default=True)
-    org_id = db.Column(UUID(as_uuid=True), db.ForeignKey('organization.org_id'), nullable=False)
+    org_id = db.Column(UUID(as_uuid=True), db.ForeignKey('Organizations.org_id'), nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     role = db.Column(db.String(), default='user', nullable=False)
     auth = db.relationship('AuthToken', backref = 'user')
@@ -25,7 +24,6 @@ class AppUsers(db.Model):
         self.last_name = last_name
         self.email = email
         self.password = password
-        self.phone = phone
         self.created_date = created_date
         self.org_id = org_id
         self.role = role

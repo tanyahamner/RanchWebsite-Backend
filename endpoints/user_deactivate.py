@@ -2,7 +2,7 @@ from flask import jsonify
 import flask
 from db import db
 from models.app_users import AppUsers, user_schema
-from models.auth_tokens import AuthToken, auth_token_schema
+from models.auth_tokens import AuthTokens, auth_token_schema
 from lib.authenticate import authenticate_return_auth
 from util.validate_uuid4 import validate_uuid4
 
@@ -23,8 +23,7 @@ def user_deactivate(req:flask.Request, user_id, auth_info) -> flask.Response:
         user_data.active = False
         db.session.commit()
 
-        # Remove all auth records for anyone from that company
-        auth_records = db.session.query(AuthToken).filter(AuthToken.user_id == user_id).all()
+        auth_records = db.session.query(AuthTokens).filter(AuthTokens.user_id == user_id).all()
         
         for auth_record in auth_records:
             db.session.delete(auth_record)

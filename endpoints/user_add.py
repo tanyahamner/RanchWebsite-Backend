@@ -16,12 +16,10 @@ def user_add(req:flask.Request, bcrypt, auth_info) -> flask.Response:
     last_name = post_data.get('last_name')
     email = post_data.get('email')
     password = post_data.get('password')
-    phone = post_data.get('phone')
     active = post_data.get('active')
     org_id = post_data.get('org_id')
     created_date = datetime.now()
     role = post_data.get('role')
-    print(role)
     if (role == None or role in ['super-admin', 'admin', 'user']):
         role = 'user'
         
@@ -39,8 +37,8 @@ def user_add(req:flask.Request, bcrypt, auth_info) -> flask.Response:
             active = True
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
-        stripped_phone = strip_phone(phone)
-        record = AppUsers(first_name, last_name, email, hashed_password, stripped_phone, created_date, org_id, role, active)
+    
+        record = AppUsers(first_name, last_name, email, hashed_password, created_date, org_id, role, active)
 
         db.session.add(record)
         db.session.commit()
