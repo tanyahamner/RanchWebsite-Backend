@@ -17,7 +17,6 @@ def user_update(req:flask.Request, auth_info) -> flask.Response:
     last_name = post_data.get('last_name')
     email = post_data.get('email')
     password = post_data.get('password')
-    phone = post_data.get('phone')
     role = post_data.get('role')
     active = post_data.get('active')
     if active == None:
@@ -41,8 +40,6 @@ def user_update(req:flask.Request, auth_info) -> flask.Response:
                 user_data.last_name = last_name
             if email is not None:
                 user_data.email = email
-            if phone is not None:
-                user_data.phone = strip_phone(phone)
             if role is not None:
                 if auth_info.user.role == 'admin' and role != 'super-admin':
                     if role == 'user':

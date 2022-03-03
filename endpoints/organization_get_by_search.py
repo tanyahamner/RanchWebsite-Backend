@@ -2,14 +2,14 @@ from flask import jsonify
 import flask
 from db import db
 from models.organizations import Organizations, organizations_schema
-from lib.authenticate import authenticate_return_auth
+from lib.authenticate import authenticate_return_auth, validate_auth_token
 from util.validate_uuid4 import validate_uuid4
 
 @authenticate_return_auth
 def Organizations_get_by_search(req:flask.Request, search_term, internal_call, p_auth_info, auth_info) -> flask.Response:
     auth_info = {}
     if internal_call == False:
-        auth_info = validate_auth_token(request.headers.get("auth_token"))
+        auth_info = validate_auth_token(flask.request.headers.get("auth_token"))
     elif p_auth_info:
         auth_info = p_auth_info
     
@@ -31,6 +31,6 @@ def Organizations_get_by_search(req:flask.Request, search_term, internal_call, p
     
     org_data = org_query.order_by(Organizations.name.asc()).all()
     if (internal_call):
-        return Organizationss_schema.dump(org_data)
+        return organizations_schema.dump(org_data)
     
-    return jsonify(Organizationss_schema.dump(org_data))
+    return jsonify(organizations_schema.dump(org_data))

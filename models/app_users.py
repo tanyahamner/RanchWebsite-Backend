@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from db import db
 import marshmallow as ma
-from .organizations import OrganizationSchema
+from .organizations import OrganizationsSchema
 
 class AppUsers(db.Model):
     __tablename__= "AppUsers"
@@ -33,7 +33,7 @@ class AppUsers(db.Model):
 class AppUsersSchema(ma.Schema):
     class Meta:
         fields = ['user_id','first_name', 'last_name', 'email', 'password', 'phone', 'created_date', 'org_id', 'organization', 'role', 'active']
-    organization = ma.fields.Nested(OrganizationSchema(only=("name","active")))
+    organization = ma.fields.Nested(OrganizationsSchema(only=("name","active")))
     
 user_schema = AppUsersSchema()
 users_schema = AppUsersSchema(many=True)

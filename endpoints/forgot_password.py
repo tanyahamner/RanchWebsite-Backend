@@ -11,10 +11,9 @@ import uuid
 
 def forgot_password_change(req:flask.Request, bcrypt) -> flask.Response:
 
-    # req will now be a json object with the requested data
     req = req.get_json()
     token = req["token"]
-    pw_reset_token = db.session.query(PWResetTokens).filter(PWResetTokens.user_id == req["user_id"]).filter(PWResetToken.token == token).filter(PWResetToken.expiration > datetime.utcnow()).first()
+    pw_reset_token = db.session.query(PWResetTokens).filter(PWResetTokens.user_id == req["user_id"]).filter(PWResetTokens.token == token).filter(PWResetTokens.expiration > datetime.utcnow()).first()
     
     if not pw_reset_token:
         return jsonify("Expired password reset link."), 401
@@ -33,10 +32,8 @@ def forgot_password_change(req:flask.Request, bcrypt) -> flask.Response:
 
 
 def pw_change_request(req:flask.Request) -> flask.Response:
-    # protect user roles
     post_data = req.get_json()
     email = post_data.get('email')
-    # TEMPLATE_ID='d-961220b709474aaba564bffa65a38c58'
     print(email)
     try:
 

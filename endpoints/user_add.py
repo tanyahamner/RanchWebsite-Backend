@@ -1,7 +1,7 @@
 from flask import jsonify
 import flask
 from db import db
-from models.organizations import Organizations, Organizations_schema
+from models.organizations import Organizations, organizations_schema
 from models.app_users import AppUsers, users_schema
 from lib.authenticate import authenticate_return_auth
 from datetime import datetime

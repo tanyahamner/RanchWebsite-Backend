@@ -21,3 +21,7 @@ from .users_get_by_search import users_get_by_search
 from .auth_token_add import auth_token_add
 from .auth_token_remove import auth_token_remove
 from .pic_add import pic_add
+from .contacts_add import contact_add
+from .contacts_delete import contacts_delete
+from .contacts_read import read_contact
+from .contacts_update import contacts_update

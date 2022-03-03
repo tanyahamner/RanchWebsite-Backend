@@ -37,12 +37,7 @@ def auth_token_add(req:flask.Request, bcrypt) -> flask.Response:
                 auth_data = AuthTokens(user_data.user_id, expiration_datetime)
                 db.session.add(auth_data)
             else:
-                # auth_record = db.session.query(AuthToken).filter(AuthToken.auth_token == auth_token).filter(AuthToken.expiration > datetime.utcnow()).first()
-                print(auth_data.expiration)
-                # 2021-05-11 05:11:13.899410
-                # old_expiration_datetime = datetime.strptime(auth_data.expiration, '%Y-%m-%d %H:%M:%S.%f')
                 if now_datetime < auth_data.expiration:
-                    # Auth Expired
                     db.session.delete(auth_data)
                     auth_data = AuthTokens(user_data.user_id, expiration_datetime)
                     db.session.add(auth_data)

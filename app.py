@@ -26,11 +26,9 @@ import endpoints
 def create_all():
     with app.app_context():
         db.create_all()
-        # Echoing the command-line parameters
         for arg in range(len(sys.argv[1:])):
             print(sys.argv[arg + 1])
 
-        # Create DevPipeline Organization
         print("Querying for DevPipeline organization...")
         org_data = db.session.query(Organizations).filter(Organizations.name == "DevPipeline").first()
         if org_data == None:
@@ -51,8 +49,6 @@ def create_all():
         else:
             print("DevPipeline Organization found!")
         
-        
-        # Create default super-admin user
         print("Querying for Super Admin user...")
         user_data = db.session.query(AppUsers).filter(AppUsers.email == 'foundation-admin@devpipeline.com').first()
         if user_data == None:
@@ -93,7 +89,6 @@ def create_app(config_file=None):
    Raises EnvironmentError if config_file cannot be found.
    """
    app = Flask(__name__)
-#  TODO: database url needs to be in env variable
    database_host = "127.0.0.1:5432"
    database_name = "foundation"
    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgres://{database_host}/{database_name}'
@@ -106,10 +101,6 @@ def create_app(config_file=None):
       config_file = abspath(join(current_dir, '../config/config.yml'))
    else:
       config_file = abspath(config_file)
-   
-   # raise error if config_file cannot be found
-#    if not isfile(config_file):
-#       raise EnvironmentError(f"App config file does not exist at {config_file}")
 
    """ Setup helpful app attributes for determining whether an app is running
    in PRODUCTION, DEBUG OR DEV
@@ -197,7 +188,6 @@ def organization_get_by_search(search_term, internal_call=False, p_auth_info=Non
 
 @app.route("/search/<search_term>")
 def get_objects_by_search(search_term):
-    # print(request)
     return endpoints.get_objects_by_search(request, search_term)
 
 @app.route("/user/add", methods=["POST"])
@@ -260,7 +250,21 @@ def forgot_password_change() -> Response:
 def pic_add() -> Response:
     return endpoints.pic_add(request)
 
+@app.route("/contacts/add", methods={"POST"})
+def contact_add() -> Response:
+    return endpoints.contact_add(request)
 
+@app.route("/contacts/read", methods={"GET"})
+def read_contact(user_id=None) -> Response:
+    return endpoints.read_contact(user_id)
+
+@app.route("/contacts/update", methods={"POST"})
+def contacts_update() -> Response:
+    return endpoints.contacts_update(request)
+
+@app.route("/contacts/delete", methods={"POST"})
+def delete_contact(user_id, contact_type) -> Response:
+    return endpoints.contacts_delete(user_id, contact_type)
 
 if __name__ == "__main__":
     create_all()

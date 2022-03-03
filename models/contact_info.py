@@ -8,8 +8,9 @@ from models.app_users import AppUsers
 
 class ContactInfo(db.Model):
     __tablename__= 'ContactInfo'
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('AppUsers.user_id', ondelete='CASCADE'), primary_key=True)
-    contact_type = db.Column(db.String(), primary_key=True)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('AppUsers.user_id', ondelete='CASCADE'))
+    contact_type = db.Column(db.String())
     contact_info = db.Column(db.string())
 
     def __init__(self, user_id, contact_type, contact_info):
