@@ -6,7 +6,7 @@ from lib.authenticate import authenticate
 from util.foundation_utils import strip_phone
 
 @authenticate
-def Organizations_update(req:flask.Request) -> flask.Response:
+def organization_update(req:flask.Request) -> flask.Response:
     post_data = req.get_json()
     org_id = post_data.get("org_id")
     if org_id == None:

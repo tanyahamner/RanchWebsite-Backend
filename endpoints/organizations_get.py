@@ -5,7 +5,7 @@ from models.organizations import Organizations, organizations_schema
 from lib.authenticate import authenticate_return_auth
 
 @authenticate_return_auth
-def Organizationss_get(req:flask.Request, auth_info) -> flask.Response:
+def organizations_get(req:flask.Request, auth_info) -> flask.Response:
     all_Organizations = []
 
     if auth_info.user.role != 'super-admin':

@@ -6,7 +6,7 @@ from lib.authenticate import authenticate_return_auth
 from util.validate_uuid4 import validate_uuid4
 
 @authenticate_return_auth
-def Organizations_delete_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
+def organization_delete_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
     org_id = org_id.strip()
     if validate_uuid4(org_id) == False:
         return jsonify("Invalid org ID"), 404

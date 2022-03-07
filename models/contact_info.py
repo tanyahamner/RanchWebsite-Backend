@@ -6,21 +6,21 @@ from db import db
 import marshmallow as ma
 from models.app_users import AppUsers
 
-class ContactInfo(db.Model):
+class UserInfo(db.Model):
     __tablename__= 'ContactInfo'
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('AppUsers.user_id', ondelete='CASCADE'))
-    contact_type = db.Column(db.String())
-    contact_info = db.Column(db.string())
+    user_info_type = db.Column(db.String())
+    user_info_info = db.Column(db.String())
 
-    def __init__(self, user_id, contact_type, contact_info):
+    def __init__(self, user_id, user_info_type, user_info):
         self.user_id = user_id
-        self.contact_type = contact_type
-        self.contact_info = contact_info
+        self.user_info_type = user_info_type
+        self.user_info_info = user_info
 
-class ContactInfoSchema(ma.Schema):
+class UserInfoSchema(ma.Schema):
     class Meta:
-        fields = ['user_id','contact_type','contact_info']
+        fields = ['user_id','user_info_type','user_info']
     
-contact_schema = ContactInfoSchema()
-contacts_schema = ContactInfoSchema(many=True)
+user_info_schema = UserInfoSchema()
+users_info_schema = UserInfoSchema(many=True)

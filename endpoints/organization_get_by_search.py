@@ -6,7 +6,7 @@ from lib.authenticate import authenticate_return_auth, validate_auth_token
 from util.validate_uuid4 import validate_uuid4
 
 @authenticate_return_auth
-def Organizations_get_by_search(req:flask.Request, search_term, internal_call, p_auth_info, auth_info) -> flask.Response:
+def organization_get_by_search(req:flask.Request, search_term, internal_call, p_auth_info, auth_info) -> flask.Response:
     auth_info = {}
     if internal_call == False:
         auth_info = validate_auth_token(flask.request.headers.get("auth_token"))

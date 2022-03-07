@@ -7,7 +7,7 @@ from util.foundation_utils import strip_phone
 from datetime import datetime
 
 @authenticate
-def Organizations_add(req:flask.Request) -> flask.Response:
+def organization_add(req:flask.Request) -> flask.Response:
     post_data = req.get_json()
     name = post_data.get('name')
     address = post_data.get('address')

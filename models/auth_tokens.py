@@ -9,7 +9,7 @@ from .app_users import AppUsersSchema
 class AuthTokens(db.Model):
     __tablename__='AuthTokens'
     auth_token = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('app_user.user_id'), nullable=False)
+    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('AppUsers.user_id'), nullable=False)
     expiration = db.Column(db.DateTime, nullable=False)
 
     def __init__(self, user_id, expiration):

@@ -156,11 +156,11 @@ def validate_auth_token(auth_token):
 
 @app.route("/organization/add", methods=["POST"])
 def organization_add() -> Response:
-    return endpoints.organization_add(request)
+    return endpoints.organizations_add(request)
 
 @app.route("/organization/update", methods=["POST"])
 def organization_update() -> Response:
-    return endpoints.organization_update(request)
+    return endpoints.organizations_update(request)
 
 @app.route("/organization/get")
 def organizations_get_all() -> Response:
@@ -250,21 +250,21 @@ def forgot_password_change() -> Response:
 def pic_add() -> Response:
     return endpoints.pic_add(request)
 
-@app.route("/contacts/add", methods={"POST"})
-def contact_add() -> Response:
-    return endpoints.contact_add(request)
+@app.route("/user_info/add", methods={"POST"})
+def user_info_add() -> Response:
+    return endpoints.user_info_add(request)
 
-@app.route("/contacts/read", methods={"GET"})
-def read_contact(user_id=None) -> Response:
-    return endpoints.read_contact(user_id)
+@app.route("/user_info/read", methods={"GET"})
+def read_user_info(user_id=None) -> Response:
+    return endpoints.read_user_info(user_id)
 
-@app.route("/contacts/update", methods={"POST"})
-def contacts_update() -> Response:
-    return endpoints.contacts_update(request)
+@app.route("/user_info/update", methods={"POST"})
+def user_info_update() -> Response:
+    return endpoints.user_info_update(request)
 
-@app.route("/contacts/delete", methods={"POST"})
-def delete_contact(user_id, contact_type) -> Response:
-    return endpoints.contacts_delete(user_id, contact_type)
+@app.route("/user_infos/delete", methods={"POST"})
+def delete_user_info(user_id, user_info_type) -> Response:
+    return endpoints.user_info_delete(user_id, user_info_type)
 
 if __name__ == "__main__":
     create_all()
