@@ -8,7 +8,7 @@ from .app_users import AppUsersSchema
 class PWResetTokens(db.Model):
     __tablename__= 'PWResetTokens'
     token = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('AppUsers.user_id'), nullable=False)
+    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('app_user.user_id'), nullable=False)
     expiration = db.Column(db.DateTime, nullable=False)
 
     def __init__(self, user_id, expiration, token):

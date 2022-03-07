@@ -252,7 +252,7 @@ def pic_add() -> Response:
 
 @app.route("/user_info/add", methods={"POST"})
 def user_info_add() -> Response:
-    return endpoints.user_info_add(request)
+    return endpoints.contacts_add(request)
 
 @app.route("/user_info/read", methods={"GET"})
 def read_user_info(user_id=None) -> Response:
@@ -260,11 +260,11 @@ def read_user_info(user_id=None) -> Response:
 
 @app.route("/user_info/update", methods={"POST"})
 def user_info_update() -> Response:
-    return endpoints.user_info_update(request)
+    return endpoints.contact_update(request)
 
 @app.route("/user_infos/delete", methods={"POST"})
 def delete_user_info(user_id, user_info_type) -> Response:
-    return endpoints.user_info_delete(user_id, user_info_type)
+    return endpoints.contacts_delete(user_id, user_info_type)
 
 if __name__ == "__main__":
     create_all()
