@@ -1,7 +1,7 @@
 from flask import jsonify
 import flask
 from db import db
-from models.contact_info import UserInfo
+from models.user_info import UserInfo
 from lib.authenticate import authenticate
 
 @authenticate

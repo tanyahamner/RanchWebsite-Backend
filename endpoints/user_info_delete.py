@@ -1,7 +1,7 @@
 from flask import jsonify
 import flask
 from db import db
-from models.contact_info import UserInfo, user_info_schema
+from models.user_info import UserInfo, user_info_schema
 from lib.authenticate import authenticate
 from util.validate_uuid4 import validate_uuid4
 

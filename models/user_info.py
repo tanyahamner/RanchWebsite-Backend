@@ -7,7 +7,7 @@ import marshmallow as ma
 from models.app_users import AppUsers
 
 class UserInfo(db.Model):
-    __tablename__= 'ContactInfo'
+    __tablename__= 'UserInfo'
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('AppUsers.user_id', ondelete='CASCADE'))
     user_info_type = db.Column(db.String())
