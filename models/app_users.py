@@ -19,7 +19,7 @@ class AppUsers(db.Model):
     role = db.Column(db.String(), default='user', nullable=False)
     auth = db.relationship('AuthTokens', backref = 'user')
 
-    def __init__(self, first_name, last_name, email, password, phone, created_date, org_id, role, active = True):
+    def __init__(self, first_name, last_name, email, password, created_date, org_id, role, active = True):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
