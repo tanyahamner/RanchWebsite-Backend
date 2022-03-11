@@ -3,6 +3,7 @@ import flask
 from db import db
 from models.organizations import Organizations, organizations_schema
 from models.app_users import AppUsers, users_schema
+from models.activate_email_tokens import ActivateEmailTokens
 from lib.authenticate import authenticate_return_auth
 from datetime import datetime
 from util.validate_uuid4 import validate_uuid4
@@ -33,16 +34,22 @@ def user_add(req:flask.Request, bcrypt, auth_info) -> flask.Response:
             return jsonify(f"Unable to add User. Organizations with id {org_id} not found"), 404
         if not Organizations.active:
             return jsonify(f"Unable to add User. Organizations is inactive."), 403
-        if active == None:
-            active = True
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
     
         record = AppUsers(first_name, last_name, email, hashed_password, created_date, org_id, role, active)
+        
 
         db.session.add(record)
         db.session.commit()
 
+        user_id = (db.session.query(AppUsers).filter(AppUsers.email == email).fetchone())[0]
+
+        record = ActivateEmailTokens(user_id)
+
+        db.session.add(record)
+        db.session.commit()
+        
         return jsonify("User created"), 201
     else:
         return jsonify("ERROR: user role not in list"), 400

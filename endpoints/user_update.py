@@ -20,7 +20,7 @@ def user_update(req:flask.Request, auth_info) -> flask.Response:
     role = post_data.get('role')
     active = post_data.get('active')
     if active == None:
-        active = True
+        active = False
         
         user_data = None
         if auth_info.user.role == 'super-admin':
