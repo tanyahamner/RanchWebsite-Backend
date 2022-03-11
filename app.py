@@ -60,13 +60,11 @@ def create_all():
             while newpw == '' or newpw is None:
                 newpw = input(' Enter a password for Super Admin:')
             password = newpw
-            active = True
             org_id = org_data.org_id
-            created_date = datetime.now()
             role = 'super-admin'
             
             hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
-            record = AppUsers(first_name, last_name, email, hashed_password, phone, created_date, org_id, role, active)
+            record = AppUsers(first_name, last_name, email, hashed_password, org_id, role)
 
             db.session.add(record)
             db.session.commit()
