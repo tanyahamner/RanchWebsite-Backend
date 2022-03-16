@@ -1,7 +1,7 @@
 from flask import jsonify
 import flask
 from db import db
-from models.organizations import Organization, organization_schema
+from models.organizations import Organizations, organizations_schema
 from lib.authenticate import authenticate
 from util.foundation_utils import strip_phone
 
@@ -21,7 +21,7 @@ def organization_update(req:flask.Request) -> flask.Response:
     if active == None:
         active = True
 
-    org_data = db.session.query(Organization).filter(Organization.org_id == org_id).first()
+    org_data = db.session.query(Organizations).filter(Organizations.org_id == org_id).first()
     org_data.name = name
     org_data.address = address
     org_data.city = city
@@ -32,4 +32,4 @@ def organization_update(req:flask.Request) -> flask.Response:
 
     db.session.commit()
 
-    return jsonify(organization_schema.dump(org_data)), 200
+    return jsonify(organizations_schema.dump(org_data)), 200

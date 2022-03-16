@@ -1,7 +1,7 @@
 from flask import jsonify
 import flask
 from db import db
-from models.app_users import AppUser, user_schema
+from models.app_users import AppUsers, user_schema
 from lib.authenticate import authenticate_return_auth
 from util.validate_uuid4 import validate_uuid4
 
@@ -13,7 +13,7 @@ def user_delete(req:flask.Request, user_id, auth_info) -> flask.Response:
     if auth_info.user.user_id == user_id:
         return jsonify("Forbidden: User cannot delete themselves"), 403
 
-    user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).first()
+    user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
     if auth_info.user.role == 'user' or (auth_info.user.role == 'admin' and auth_info.user.org_id != user_data.org_id):
         return jsonify("Unauthorized"), 403
     
