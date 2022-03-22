@@ -14,7 +14,7 @@ def contact_update(req:flask.Request) -> flask.Response:
     if user_id and contact_value == None:
         return jsonify('ERROR: Primary Values missing')
     
-    contact_data = db.session.query(UserInfo).filter(UserInfo.user_id == user_id).first()
+    contact_data = db.session.query(ContactInfo).filter(ContactInfo.user_id == user_id).first()
 
     if contact_data:
         contact_data.user_id = user_id

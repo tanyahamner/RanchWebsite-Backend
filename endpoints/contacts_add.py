@@ -12,7 +12,7 @@ def contacts_add(req:flask.Request) -> flask.Response:
     contact_value = post_data.get('contact_value')
     
 
-    check = db.session.query(ContactInfo).filter(ContactInfo.contact_type == contact_type).filter(ContactInfo.user_id == user_id).first
+    check = db.session.query(ContactInfo).filter(ContactInfo.contact_type == contact_type).filter(ContactInfo.user_id == user_id).one()
     if check != None:
         return jsonify("ERROR: ContactInfo type already exists.")
     else:

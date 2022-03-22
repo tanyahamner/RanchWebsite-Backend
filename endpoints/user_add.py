@@ -43,7 +43,7 @@ def user_add(req:flask.Request, bcrypt, auth_info) -> flask.Response:
         db.session.add(record)
         db.session.commit()
 
-        user_id = (db.session.query(AppUsers).filter(AppUsers.email == email).fetchone())[0]
+        user_id = (db.session.query(AppUsers).filter(AppUsers.email == email).one())[0]
 
         record = ActivateEmailTokens(user_id)
 

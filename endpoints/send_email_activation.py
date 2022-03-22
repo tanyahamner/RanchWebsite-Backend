@@ -11,7 +11,7 @@ from util.send_email import send_email
 def email_activate(req:flask.Request, auth_info) -> flask.Response:
     user_id = auth_info.user_id
     email = (db.session.query(AppUsers).filter(AppUsers.user_id == user_id).fetchone()).email
-    token = db.session.query(ActivateEmailTokens).filter(ActivateEmailTokens.user_id == user_id).fetchone()
+    token = db.session.query(ActivateEmailTokens).filter(ActivateEmailTokens.user_id == user_id).one()
     if token:
         if token.expiration <= datetime.utcnow():
             return jsonify("Token Expired")
