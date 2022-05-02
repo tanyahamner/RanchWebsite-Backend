@@ -20,17 +20,17 @@ def organization_get_by_id(org_id) -> Response:
     return controllers.organization_get_by_id(request, org_id)
 
 @orgs.route("/organization/delete/<org_id>", methods=["DELETE"])
-def organization_delete_by_id(org_id):
+def organization_delete_by_id(org_id) -> Response:
     return controllers.organization_delete_by_id(request, org_id)
 
 @orgs.route("/organization/activate/<org_id>", methods=["PUT"])
-def organization_activate_by_id(org_id):
+def organization_activate_by_id(org_id) -> Response:
     return controllers.organization_activate_by_id(request, org_id)
 
 @orgs.route("/organization/deactivate/<org_id>", methods=["PUT"])
-def organization_deactivate_by_id(org_id):
+def organization_deactivate_by_id(org_id) -> Response:
     return controllers.organization_deactivate_by_id(request, org_id)
     
 @orgs.route("/organization/search/<search_term>")
-def organization_get_by_search(search_term, internal_call=False, p_auth_info=None):
+def organization_get_by_search(search_term, internal_call=False, p_auth_info=None) -> Response:
      return controllers.organization_get_by_search(request, search_term, internal_call, p_auth_info)
