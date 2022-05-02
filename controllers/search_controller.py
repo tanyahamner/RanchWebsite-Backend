@@ -1,11 +1,9 @@
 from flask import jsonify
 import flask
 from db import db
-from models.organizations import Organization, organization_schema
-from models.app_users import AppUser, user_schema
+from models.app_users import AppUser
 from lib.authenticate import authenticate_return_auth
-from util.validate_uuid4 import validate_uuid4
-import endpoints
+import controllers
 
 @authenticate_return_auth
 def get_objects_by_search(req:flask.Request, search_term, auth_info) -> flask.Response:
@@ -14,6 +12,6 @@ def get_objects_by_search(req:flask.Request, search_term, auth_info) -> flask.Re
         return jsonify("Unauthorized"), 403
     
     search_results = {}
-    search_results["organizations"] = endpoints.organization_get_by_search(req, search_term, True, auth_info)
-    search_results["users"] = endpoints.users_get_by_search(req, search_term, True, auth_info)
+    search_results["organizations"] = controllers.organization_get_by_search(req, search_term, True, auth_info)
+    search_results["users"] = controllers.users_get_by_search(req, search_term, True, auth_info)
     return jsonify(search_results)
