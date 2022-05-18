@@ -4,10 +4,10 @@ from flask import jsonify
 import flask
 from flask_bcrypt import check_password_hash, generate_password_hash
 from db import db
-from models.app_users import AppUser
-from models.auth_tokens import AuthToken, auth_token_schema
+from models.app_users import AppUsers
+from models.auth_tokens import AuthTokens, auth_token_schema
 from datetime import datetime, timedelta
-from models.pw_reset_token import PWResetToken
+from models.pw_reset_token import PWResetTokens
 from util.send_email import send_email
 
 def auth_token_add(req:flask.Request) -> flask.Response:
@@ -22,9 +22,9 @@ def auth_token_add(req:flask.Request) -> flask.Response:
 
         now_datetime = datetime.utcnow()
         expiration_datetime = datetime.utcnow() + timedelta(hours=12)
-        user_data = db.session.query(AppUser)\
-            .filter(AppUser.email == email)\
-            .filter(AppUser.active).first()
+        user_data = db.session.query(AppUsers)\
+            .filter(AppUsers.email == email)\
+            .filter(AppUsers.active).first()
 
         if user_data:
             if user_data.organization.active == False:
@@ -34,19 +34,19 @@ def auth_token_add(req:flask.Request) -> flask.Response:
             if is_password_valid == False:
                 return jsonify("Invalid email/password"), 401
 
-            auth_data = db.session.query(AuthToken).filter(AuthToken.user_id == user_data.user_id).first()
+            auth_data = db.session.query(AuthTokens).filter(AuthTokens.user_id == user_data.user_id).first()
             if auth_data is None:
-                auth_data = AuthToken(user_data.user_id, expiration_datetime)
+                auth_data = AuthTokens(user_data.user_id, expiration_datetime)
                 db.session.add(auth_data)
             else:
-                # auth_record = db.session.query(AuthToken).filter(AuthToken.auth_token == auth_token).filter(AuthToken.expiration > datetime.utcnow()).first()
+                # auth_record = db.session.query(AuthTokens).filter(AuthTokens.auth_token == auth_token).filter(AuthTokens.expiration > datetime.utcnow()).first()
                 print(auth_data.expiration)
                 # 2021-05-11 05:11:13.899410
                 # old_expiration_datetime = datetime.strptime(auth_data.expiration, '%Y-%m-%d %H:%M:%S.%f')
                 if now_datetime < auth_data.expiration:
                     # Auth Expired
                     db.session.delete(auth_data)
-                    auth_data = AuthToken(user_data.user_id, expiration_datetime)
+                    auth_data = AuthTokens(user_data.user_id, expiration_datetime)
                     db.session.add(auth_data)
                 else:
                     auth_data.expiration = expiration_datetime
@@ -69,9 +69,9 @@ def auth_token_remove(req:flask.Request) -> flask.Response:
             return jsonify("Cannot log out a user with no user_id or auth_token"), 200
         # print("AUTH TOKEN: " + auth_token)
         if auth_token and auth_token != "not required":
-            auth_data = db.session.query(AuthToken).filter(AuthToken.auth_token == auth_token).first()
+            auth_data = db.session.query(AuthTokens).filter(AuthTokens.auth_token == auth_token).first()
         else:
-            auth_data = db.session.query(AuthToken).filter(AuthToken.user_id == user_id).first()
+            auth_data = db.session.query(AuthTokens).filter(AuthTokens.user_id == user_id).first()
         
         if auth_data:
             db.session.delete(auth_data)
@@ -86,12 +86,12 @@ def forgot_password_change(req:flask.Request) -> flask.Response:
     # req will now be a json object with the requested data
     req = req.get_json()
     token = req["token"]
-    pw_reset_token = db.session.query(PWResetToken).filter(PWResetToken.user_id == req["user_id"]).filter(PWResetToken.token == token).filter(PWResetToken.expiration > datetime.utcnow()).first()
+    pw_reset_token = db.session.query(PWResetTokens).filter(PWResetTokens.user_id == req["user_id"]).filter(PWResetTokens.token == token).filter(PWResetTokens.expiration > datetime.utcnow()).first()
     
     if not pw_reset_token:
         return jsonify("Expired password reset link."), 401
 
-    user_db = db.session.query(AppUser).filter(AppUser.user_id == req["user_id"]).first()
+    user_db = db.session.query(AppUsers).filter(AppUsers.user_id == req["user_id"]).first()
     if not req["new_password"] or len(req["new_password"]) < 1:
         return jsonify("Cannot set to blank password."), 400
 
@@ -112,10 +112,10 @@ def pw_change_request(req:flask.Request) -> flask.Response:
     print(email)
     try:
 
-        user = db.session.query(AppUser).filter(AppUser.email == email).filter(AppUser.active == True).first()
+        user = db.session.query(AppUsers).filter(AppUsers.email == email).filter(AppUsers.active == True).first()
         if user: 
             reset_pw_link, token, expiration = get_reset_link(req, user.user_id)
-            token_record = PWResetToken(user.user_id, expiration, token)
+            token_record = PWResetTokens(user.user_id, expiration, token)
             print(token_record)
             db.session.add(token_record)
             db.session.commit()

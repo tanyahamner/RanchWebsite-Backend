@@ -3,10 +3,10 @@ from flask_bcrypt import generate_password_hash
 from flask import jsonify
 import flask
 from db import db
-from models.app_users import AppUser, user_schema, users_schema
+from models.app_users import AppUsers, user_schema, users_schema
 from lib.authenticate import authenticate_return_auth
-from models.auth_tokens import AuthToken
-from models.organizations import Organization
+from models.auth_tokens import AuthTokens
+from models.organizations import Organizations
 from util.foundation_utils import strip_phone
 from util.validate_uuid4 import validate_uuid4
 
@@ -18,9 +18,9 @@ def user_activate(req:flask.Request, user_id, auth_info) -> flask.Response:
     user_data = {}
 
     if auth_info.user.role == 'super-admin':
-        user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
     else:    
-        user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).filter(AppUser.org_id == auth_info.user.org_id).first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).filter(AppUsers.org_id == auth_info.user.org_id).first()
     
     if user_data:
         user_data.active = True
@@ -53,17 +53,17 @@ def user_add(req:flask.Request, auth_info) -> flask.Response:
                 role = 'user'
             org_id = auth_info.user.org_id
         
-        organization = db.session.query(Organization).filter(Organization.org_id == org_id).first()
-        if not organization:
-            return jsonify(f"Unable to add User. Organization with id {org_id} not found"), 404
-        if not organization.active:
-            return jsonify(f"Unable to add User. Organization is inactive."), 403
+        organizations = db.session.query(Organizations).filter(Organizations.org_id == org_id).first()
+        if not organizations:
+            return jsonify(f"Unable to add User. Organizations with id {org_id} not found"), 404
+        if not organizations.active:
+            return jsonify(f"Unable to add User. Organizations is inactive."), 403
         if active == None:
             active = True
 
         hashed_password = generate_password_hash(password).decode("utf8")
         stripped_phone = strip_phone(phone)
-        record = AppUser(first_name, last_name, email, hashed_password, stripped_phone, created_date, org_id, role, active)
+        record = AppUsers(first_name, last_name, email, hashed_password, stripped_phone, created_date, org_id, role, active)
 
         db.session.add(record)
         db.session.commit()
@@ -82,16 +82,16 @@ def user_deactivate(req:flask.Request, user_id, auth_info) -> flask.Response:
     if str(user_id) == str(auth_info.user.user_id):
         return jsonify('ERROR: cannot deactivate your own user'), 405
     if auth_info.user.role == 'super-admin':
-        user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
     else:    
-        user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).filter(AppUser.org_id == auth_info.user.org_id).first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).filter(AppUsers.org_id == auth_info.user.org_id).first()
     
     if user_data:
         user_data.active = False
         db.session.commit()
 
         # Remove all auth records for anyone from that company
-        auth_records = db.session.query(AuthToken).filter(AuthToken.user_id == user_id).all()
+        auth_records = db.session.query(AuthTokens).filter(AuthTokens.user_id == user_id).all()
         
         for auth_record in auth_records:
             db.session.delete(auth_record)
@@ -114,7 +114,7 @@ def user_delete(req:flask.Request, user_id, auth_info) -> flask.Response:
     if auth_info.user.user_id == user_id:
         return jsonify("Forbidden: User cannot delete themselves"), 403
 
-    user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).first()
+    user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
     if auth_info.user.role == 'user' or (auth_info.user.role == 'admin' and auth_info.user.org_id != user_data.org_id):
         return jsonify("Unauthorized"), 403
     
@@ -136,9 +136,9 @@ def user_get_by_id(req:flask.Request, user_id, auth_info) -> flask.Response:
     user_data = {}
     
     if auth_info.user.role != 'super-admin':
-        user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).filter(AppUser.org_id == auth_info.user.org_id).first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).filter(AppUsers.org_id == auth_info.user.org_id).first()
     else:
-        user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
     if user_data:
         return jsonify(user_schema.dump(user_data))
 
@@ -147,7 +147,7 @@ def user_get_by_id(req:flask.Request, user_id, auth_info) -> flask.Response:
 
 @authenticate_return_auth
 def user_get_from_auth_token(req:flask.Request, auth_info) -> flask.Response:
-    user_data = db.session.query(AppUser).filter(AppUser.user_id == auth_info.user_id).first()
+    user_data = db.session.query(AppUsers).filter(AppUsers.user_id == auth_info.user_id).first()
     
     if user_data:
         return jsonify(user_schema.dump(user_data))
@@ -174,11 +174,11 @@ def user_update(req:flask.Request, auth_info) -> flask.Response:
         
         user_data = None
         if auth_info.user.role == 'super-admin':
-            user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).first()
+            user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
         elif auth_info.user.role == 'admin':
-            user_data = db.session.query(AppUser).filter(AppUser.user_id == user_id).filter(AppUser.org_id == auth_info.user.org_id).first()
+            user_data = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).filter(AppUsers.org_id == auth_info.user.org_id).first()
         elif auth_info.user.role == 'user' and str(user_id) == str(auth_info.user.user_id):
-            user_data = db.session.query(AppUser).filter(AppUser.user_id == auth_info.user.user_id).first()
+            user_data = db.session.query(AppUsers).filter(AppUsers.user_id == auth_info.user.user_id).first()
         
         if user_data:
             user_data.user_id = user_id
@@ -195,9 +195,9 @@ def user_update(req:flask.Request, auth_info) -> flask.Response:
             if role is not None:
                 if auth_info.user.role == 'admin' and role != 'super-admin':
                     if role == 'user':
-                        admins_in_org = db.session.query(AppUser).filter(AppUser.org_id == auth_info.user.org_id).all()
+                        admins_in_org = db.session.query(AppUsers).filter(AppUsers.org_id == auth_info.user.org_id).all()
                         if not admins_in_org or len(admins_in_org) <= 1:
-                            return jsonify("Cannot downgrade role of last admin in organization"), 403
+                            return jsonify("Cannot downgrade role of last admin in Organizations"), 403
                     user_data.role = role
                 if auth_info.user.role == 'super-admin':
                     user_data.role = role
@@ -220,9 +220,9 @@ def users_get_all(req:flask.Request, auth_info) -> flask.Response:
     all_users = []
 
     if auth_info.user.role != 'super-admin':
-        all_users = db.session.query(AppUser).filter(AppUser.org_id == auth_info.user.org_id).order_by(AppUser.last_name.asc()).order_by(AppUser.first_name.asc()).all()
+        all_users = db.session.query(AppUsers).filter(AppUsers.org_id == auth_info.user.org_id).order_by(AppUsers.last_name.asc()).order_by(AppUsers.first_name.asc()).all()
     else:
-        all_users = db.session.query(AppUser).order_by(AppUser.last_name.asc()).order_by(AppUser.first_name.asc()).all()
+        all_users = db.session.query(AppUsers).order_by(AppUsers.last_name.asc()).order_by(AppUsers.first_name.asc()).all()
     
     return jsonify(users_schema.dump(all_users))
 
@@ -232,7 +232,7 @@ def users_get_by_org_id(req:flask.Request, org_id, auth_info) -> flask.Response:
     if validate_uuid4(org_id) == False:
         return jsonify("Invalid org ID"), 404
 
-    users_by_org = db.session.query(AppUser).filter(AppUser.org_id == org_id).all()
+    users_by_org = db.session.query(AppUsers).filter(AppUsers.org_id == org_id).all()
     return jsonify(users_schema.dump(users_by_org))
 
 
@@ -243,22 +243,22 @@ def users_get_by_search(req:flask.Request, search_term, internal_call, p_auth_in
     user_data = {}
 
     if auth_info.user.role == 'admin' or auth_info.user.role == 'user':
-        user_data = db.session.query(AppUser).join(Organization).filter(Organization.org_id == AppUser.org_id)\
-            .filter(AppUser.org_id == auth_info.user.org_id) \
+        user_data = db.session.query(AppUsers).join(Organizations).filter(Organizations.org_id == AppUsers.org_id)\
+            .filter(AppUsers.org_id == auth_info.user.org_id) \
             .filter(db.or_( \
-            db.func.lower(AppUser.first_name).contains(search_term), \
-            db.func.lower(AppUser.last_name).contains(search_term), \
-            AppUser.phone.contains(search_term), \
-            db.func.lower(Organization.name).contains(search_term)
-                )).order_by(AppUser.last_name.asc()).order_by(AppUser.first_name.asc()).all()
+            db.func.lower(AppUsers.first_name).contains(search_term), \
+            db.func.lower(AppUsers.last_name).contains(search_term), \
+            AppUsers.phone.contains(search_term), \
+            db.func.lower(Organizations.name).contains(search_term)
+                )).order_by(AppUsers.last_name.asc()).order_by(AppUsers.first_name.asc()).all()
     else:
-        user_data = db.session.query(AppUser).join(Organization).filter(Organization.org_id == AppUser.org_id)\
+        user_data = db.session.query(AppUsers).join(Organizations).filter(Organizations.org_id == AppUsers.org_id)\
             .filter(db.or_( \
-            db.func.lower(AppUser.first_name).contains(search_term), \
-            db.func.lower(AppUser.last_name).contains(search_term), \
-            AppUser.phone.contains(search_term), \
-            db.func.lower(Organization.name).contains(search_term)
-                )).order_by(AppUser.last_name.asc()).order_by(AppUser.first_name.asc()).all()
+            db.func.lower(AppUsers.first_name).contains(search_term), \
+            db.func.lower(AppUsers.last_name).contains(search_term), \
+            AppUsers.phone.contains(search_term), \
+            db.func.lower(Organizations.name).contains(search_term)
+                )).order_by(AppUsers.last_name.asc()).order_by(AppUsers.first_name.asc()).all()
         
     if internal_call:
         return users_schema.dump(user_data)
