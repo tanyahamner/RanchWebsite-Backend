@@ -8,7 +8,7 @@ from util.foundation_utils import strip_phone
 from util.validate_uuid4 import validate_uuid4
 
 @authenticate_return_auth
-def organizations_activate_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
+def organization_activate_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
     org_id = org_id.strip()
     if validate_uuid4(org_id) == False:
             return jsonify("Invalid org ID"), 404
@@ -25,7 +25,7 @@ def organizations_activate_by_id(req:flask.Request, org_id, auth_info) -> flask.
 
 
 @authenticate
-def organizations_add(req:flask.Request) -> flask.Response:
+def organization_add(req:flask.Request) -> flask.Response:
     post_data = req.get_json()
     name = post_data.get('name')
     address = post_data.get('address')
@@ -48,7 +48,7 @@ def organizations_add(req:flask.Request) -> flask.Response:
 
 
 @authenticate_return_auth
-def organizations_deactivate_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
+def organization_deactivate_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
     org_id = org_id.strip()
     if validate_uuid4(org_id) == False:
         return jsonify("Invalid org ID"), 404
@@ -80,7 +80,7 @@ def organizations_deactivate_by_id(req:flask.Request, org_id, auth_info) -> flas
 
 
 @authenticate_return_auth
-def organizations_delete_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
+def organization_delete_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
     org_id = org_id.strip()
     if validate_uuid4(org_id) == False:
         return jsonify("Invalid org ID"), 404
@@ -102,7 +102,7 @@ def organizations_delete_by_id(req:flask.Request, org_id, auth_info) -> flask.Re
 
 
 @authenticate_return_auth
-def organizations_get_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
+def organization_get_by_id(req:flask.Request, org_id, auth_info) -> flask.Response:
     org_id = org_id.strip()
     if validate_uuid4(org_id) == False:
         return jsonify("Invalid org ID"), 404
@@ -120,7 +120,7 @@ def organizations_get_by_id(req:flask.Request, org_id, auth_info) -> flask.Respo
 
 
 @authenticate_return_auth
-def organizations_get_by_search(req:flask.Request, search_term, internal_call, p_auth_info, auth_info) -> flask.Response:
+def organization_get_by_search(req:flask.Request, search_term, internal_call, p_auth_info, auth_info) -> flask.Response:
     auth_info = {}
     if internal_call == False:
         auth_info = validate_auth_token(req.headers.get("auth_token"))
@@ -151,7 +151,7 @@ def organizations_get_by_search(req:flask.Request, search_term, internal_call, p
 
 
 @authenticate
-def organizations_update(req:flask.Request) -> flask.Response:
+def organization_update(req:flask.Request) -> flask.Response:
     post_data = req.get_json()
     org_id = post_data.get("org_id")
     if org_id == None:
