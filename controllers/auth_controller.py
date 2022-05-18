@@ -27,7 +27,7 @@ def auth_token_add(req:flask.Request) -> flask.Response:
             .filter(AppUsers.active).first()
 
         if user_data:
-            if user_data.organization.active == False:
+            if user_data.Organizations.active == False:
                 return jsonify("Your account has been deactivated. Please contact your account executive."), 403
 
             is_password_valid = check_password_hash(user_data.password, password)

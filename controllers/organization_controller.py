@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import jsonify
 import flask
 from db import db
-from models.organizations import Organizations, organizations_schema, organizations_schema
+from models.organizations import Organizations, organization_schema, organizations_schema
 from lib.authenticate import authenticate, authenticate_return_auth, validate_auth_token
 from util.foundation_utils import strip_phone
 from util.validate_uuid4 import validate_uuid4
@@ -17,7 +17,7 @@ def organization_activate_by_id(req:flask.Request, org_id, auth_info) -> flask.R
     if org_data:
         org_data.active = True
         db.session.commit()
-        return jsonify(organizations_schema.dump(org_data)), 200
+        return jsonify(organization_schema.dump(org_data)), 200
 
         return jsonify(f'Organizations with org_id {org_id} not found'), 404
     
@@ -44,7 +44,7 @@ def organization_add(req:flask.Request) -> flask.Response:
     db.session.add(org_data)
     db.session.commit()
 
-    return jsonify(organizations_schema.dump(org_data)), 201
+    return jsonify(organization_schema.dump(org_data)), 201
 
 
 @authenticate_return_auth
@@ -72,7 +72,7 @@ def organization_deactivate_by_id(req:flask.Request, org_id, auth_info) -> flask
 
         # db.session.commit()
 
-        return jsonify(organizations_schema.dump(org_data)), 200
+        return jsonify(organization_schema.dump(org_data)), 200
 
         return jsonify(f'Organizations with org_id {org_id} not found'), 404
 
@@ -114,7 +114,7 @@ def organization_get_by_id(req:flask.Request, org_id, auth_info) -> flask.Respon
     org_data = org_query.first()
 
     if org_data:
-        return jsonify(organizations_schema.dump(org_data))
+        return jsonify(organization_schema.dump(org_data))
 
     return jsonify(f"Organizations with org_id {org_id} not found"), 404
 
@@ -177,7 +177,7 @@ def organization_update(req:flask.Request) -> flask.Response:
 
     db.session.commit()
 
-    return jsonify(organizations_schema.dump(org_data)), 200
+    return jsonify(organization_schema.dump(org_data)), 200
 
 
 @authenticate_return_auth
