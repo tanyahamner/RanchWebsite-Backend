@@ -4,37 +4,34 @@ import uuid
 from datetime import datetime
 from db import db
 import marshmallow as ma
-from .organizations import OrganizationSchema
+from .organizations import OrganizationsSchema
 
-class AppUser(db.Model):
+class AppUsers(db.Model):
+    __tablename__= "AppUsers"
     user_id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     first_name = db.Column(db.String(), nullable = False)
     last_name = db.Column(db.String(), nullable = False)
     email = db.Column(db.String(), nullable = False, unique = True)
     password = db.Column(db.String(), nullable = False)
-    phone = db.Column(db.String())
-    active = db.Column(db.Boolean(), nullable=False, default=True)
-    org_id = db.Column(UUID(as_uuid=True), db.ForeignKey('organization.org_id'), nullable=False)
+    active = db.Column(db.Boolean(), nullable=False, default=False)
+    org_id = db.Column(UUID(as_uuid=True), db.ForeignKey('Organizations.org_id'), nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     role = db.Column(db.String(), default='user', nullable=False)
-    auth = db.relationship('AuthToken', backref = 'user')
+    auth = db.relationship('AuthTokens', backref = 'user')
 
-    def __init__(self, first_name, last_name, email, password, phone, created_date, org_id, role, active = True):
+    def __init__(self, first_name, last_name, email, password, org_id, role):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.password = password
-        self.phone = phone
-        self.created_date = created_date
         self.org_id = org_id
         self.role = role
-        self.active = active
    
    
-class AppUserSchema(ma.Schema):
+class AppUsersSchema(ma.Schema):
     class Meta:
         fields = ['user_id','first_name', 'last_name', 'email', 'password', 'phone', 'created_date', 'org_id', 'organization', 'role', 'active']
-    organization = ma.fields.Nested(OrganizationSchema(only=("name","active")))
+    organization = ma.fields.Nested(OrganizationsSchema(only=("name","active")))
     
-user_schema = AppUserSchema()
-users_schema = AppUserSchema(many=True)
+user_schema = AppUsersSchema()
+users_schema = AppUsersSchema(many=True)

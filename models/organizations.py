@@ -5,7 +5,8 @@ from datetime import datetime
 from db import db
 import marshmallow as ma
 
-class Organization(db.Model):
+class Organizations(db.Model):
+    __tablename__= 'Organizations'
     org_id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = db.Column(db.String(), nullable = False, unique = True)
     address = db.Column(db.String())
@@ -15,7 +16,7 @@ class Organization(db.Model):
     phone = db.Column(db.String())
     active = db.Column(db.Boolean(), nullable=False, default=True)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
-    users = db.relationship('AppUser', cascade="all,delete", backref = 'organization')
+    users = db.relationship('AppUsers', cascade="all,delete", backref = 'Organizations')
     
     def __init__(self, name, address, city, state, zip_code, phone, created_date, active = True):
         self.name = name
@@ -28,9 +29,9 @@ class Organization(db.Model):
         self.active = active
    
    
-class OrganizationSchema(ma.Schema):
+class OrganizationsSchema(ma.Schema):
     class Meta:
         fields = ['org_id','name', 'address', 'city', 'state', 'zip_code', 'phone', 'created_date', 'active']
 
-organization_schema = OrganizationSchema()
-organizations_schema = OrganizationSchema(many=True)
+organization_schema = OrganizationsSchema()
+organizations_schema = OrganizationsSchema(many=True)

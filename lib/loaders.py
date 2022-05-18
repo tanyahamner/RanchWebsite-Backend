@@ -8,7 +8,6 @@ from flask_sqlalchemy import Model
 
 __all__ = ('get_models', 'load_models')
 
-# main project path & module name
 PROJ_DIR = abspath(join(dirname(abspath(__file__)), '../..'))
 APP_MODULE = basename(PROJ_DIR)
 
@@ -60,6 +59,3 @@ def load_models():
    """Load application models for management script & app availability."""
    for model in dynamic_loader('models', is_model):
       setattr(modules[__name__], model.__name__, model)
-   #for model in get_models():
-   #    setattr(modules[__name__], model.__name__, model)
-   

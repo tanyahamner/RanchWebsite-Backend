@@ -3,7 +3,12 @@ import flask
 import glob, os
 import uuid
 from db import db
+<<<<<<< HEAD:controllers/image_controller.py
 from models.pic_reference import PicReference
+=======
+from models.app_users import AppUsers, user_schema
+from models.pic_reference import PicReferences, pic_schema
+>>>>>>> dev:endpoints/pic_add.py
 from PIL import Image
 from lib.authenticate import authenticate_return_auth
 import base64
@@ -34,7 +39,7 @@ def pic_add(req:flask.Request, auth_info) -> flask.Response:
             im.save(file + ".JPEG")
 
 
-        record = PicReference(file_id, user_id, original_name, ext)
+        record = PicReferences(file_id, user_id, original_name, ext)
 
         db.session.add(record)
         db.session.commit()
