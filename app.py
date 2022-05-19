@@ -20,7 +20,7 @@ import os
 from os.path import abspath, dirname, isfile, join
 from datetime import datetime, timedelta
 from util.date_range import DateRange
-import endpoints
+import routes
 
 
 def create_all():
@@ -64,7 +64,7 @@ def create_all():
             role = 'super-admin'
             
             hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
-            record = AppUsers(first_name, last_name, email, hashed_password, org_id, role)
+            record = AppUsers(first_name=first_name, last_name=last_name, email=email, password=hashed_password, org_id=org_id, role=role, active=True)
 
             db.session.add(record)
             db.session.commit()
@@ -144,125 +144,18 @@ bcrypt = Bcrypt(app)
 CORS(app)
 ma  = Marshmallow(app)
 
+app.register_blueprint(routes.auth)
+app.register_blueprint(routes.images)
+app.register_blueprint(routes.orgs)
+app.register_blueprint(routes.search)
+app.register_blueprint(routes.users)
+
 def validate_auth_token(auth_token):
     if auth_token is None or auth_token == "" or auth_token == 'not required':
         return False
     auth_record = db.session.query(AuthTokens).filter(AuthTokens.auth_token == auth_token).filter(AuthTokens.expiration > datetime.utcnow()).first()
     
     return auth_record
-
-
-@app.route("/organization/add", methods=["POST"])
-def organization_add() -> Response:
-    return endpoints.organizations_add(request)
-
-@app.route("/organization/update", methods=["POST"])
-def organization_update() -> Response:
-    return endpoints.organizations_update(request)
-
-@app.route("/organization/get")
-def organizations_get_all() -> Response:
-    return endpoints.organizations_get(request)
-
-@app.route("/organization/get/<org_id>")
-def organization_get_by_id(org_id) -> Response:
-    return endpoints.organization_get_by_id(request, org_id)
-
-@app.route("/organization/delete/<org_id>", methods=["DELETE"])
-def organization_delete_by_id(org_id):
-    return endpoints.organization_delete_by_id(request, org_id)
-
-@app.route("/organization/activate/<org_id>", methods=["PUT"])
-def organization_activate_by_id(org_id):
-    return endpoints.organization_activate_by_id(request, org_id)
-
-@app.route("/organization/deactivate/<org_id>", methods=["PUT"])
-def organization_deactivate_by_id(org_id):
-    return endpoints.organization_deactivate_by_id(request, org_id)
-    
-@app.route("/organization/search/<search_term>")
-def organization_get_by_search(search_term, internal_call=False, p_auth_info=None):
-     return endpoints.organization_get_by_search(request, search_term, internal_call, p_auth_info)
-
-@app.route("/search/<search_term>")
-def get_objects_by_search(search_term):
-    return endpoints.get_objects_by_search(request, search_term)
-
-@app.route("/user/add", methods=["POST"])
-def user_add():
-    return endpoints.user_add(request, bcrypt)
-
-@app.route("/user/update", methods=["POST"])
-def user_update():
-    return endpoints.user_update(request)
-
-@app.route("/user/get", methods=["GET"])
-def users_get_all():
-    return endpoints.users_get_all(request)
-
-@app.route("/user/get/<user_id>", methods=["GET"])
-def user_get_by_id(user_id):
-    return endpoints.user_get_by_id(request, user_id)
-
-@app.route("/user/get/me", methods=["GET"])
-def user_get_from_auth_token():
-    return endpoints.user_get_from_auth_token(request)
-
-@app.route("/user/get/organization/<org_id>", methods=["GET"])
-def users_get_by_org_id(org_id):
-    return endpoints.users_get_by_org_id(request, org_id)
-
-@app.route("/user/delete/<user_id>", methods=["DELETE"])
-def user_delete(user_id):
-    return endpoints.user_delete(request, user_id)
-
-@app.route("/user/activate/<user_id>", methods=["PUT"])
-def user_activate(user_id):
-    return endpoints.user_activate(request, user_id)
-
-@app.route("/user/deactivate/<user_id>", methods=["PUT"])
-def user_deactivate(user_id):
-        return endpoints.user_deactivate(request, user_id)
-
-@app.route("/user/search/<search_term>")
-def users_get_by_search(search_term, internal_call=False, p_auth_info=None):
-    return endpoints.users_get_by_search(request, search_term, internal_call, p_auth_info)
-
-@app.route("/user/auth", methods=["POST"])
-def auth_token_add():
-    return endpoints.auth_token_add(request, bcrypt)
-
-@app.route("/user/logout", methods=["PUT"])
-def auth_token_remove():
-    return endpoints.auth_token_remove(request)
-
-@app.route("/user/pw_change_request", methods=["POST"])
-def pw_change_request() -> Response:
-    return endpoints.forgot_password.pw_change_request(request)
-
-@app.route("/user/forgot_password_change", methods=["POST"])
-def forgot_password_change() -> Response:
-    return endpoints.forgot_password.forgot_password_change(request, bcrypt)
-
-@app.route("/receive", methods=["POST"])
-def pic_add() -> Response:
-    return endpoints.pic_add(request)
-
-@app.route("/user_info/add", methods={"POST"})
-def user_info_add() -> Response:
-    return endpoints.contacts_add(request)
-
-@app.route("/user_info/read", methods={"GET"})
-def read_user_info(user_id=None) -> Response:
-    return endpoints.read_user_info(user_id)
-
-@app.route("/user_info/update", methods={"POST"})
-def user_info_update() -> Response:
-    return endpoints.contact_update(request)
-
-@app.route("/user_infos/delete", methods={"POST"})
-def delete_user_info(user_id, user_info_type) -> Response:
-    return endpoints.contacts_delete(user_id, user_info_type)
 
 if __name__ == "__main__":
     create_all()
