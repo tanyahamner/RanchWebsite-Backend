@@ -64,7 +64,7 @@ def create_all():
             role = 'super-admin'
             
             hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
-            record = AppUsers(first_name=first_name, last_name=last_name, email=email, password=hashed_password, org_id=org_id, role=role, active=True)
+            record = AppUsers(first_name=first_name, last_name=last_name, email=email, phone=phone, password=hashed_password, org_id=org_id, role=role, active=True)
 
             db.session.add(record)
             db.session.commit()
