@@ -1,25 +1,23 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 import sys
 
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-import uuid
 from db import db, init_db
 from flask_marshmallow import Marshmallow
 
-from models.organizations import organization_schema, organizations_schema, Organizations, OrganizationsSchema
-from models.app_users import user_schema, users_schema, AppUsers, AppUsersSchema
-from models.auth_tokens import auth_token_schema, AuthTokens, AuthTokensSchema
+from models.organizations import Organizations
+from models.app_users import AppUsers
+from models.auth_tokens import AuthTokens
 
 from util.validate_uuid4 import validate_uuid4
 from util.foundation_utils import strip_phone
 
 import os
-from os.path import abspath, dirname, isfile, join
-from datetime import datetime, timedelta
-from util.date_range import DateRange
+from os.path import abspath, dirname, join
+from datetime import datetime
 import routes
 
 
@@ -89,7 +87,7 @@ def create_app(config_file=None):
    app = Flask(__name__)
    database_host = "127.0.0.1:5432"
    database_name = "foundation"
-   app.config['SQLALCHEMY_DATABASE_URI'] = f'postgres://{database_host}/{database_name}'
+   app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI", f'postgres://{database_host}/{database_name}')
    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
    
    init_db(app, db)
@@ -150,12 +148,6 @@ app.register_blueprint(routes.orgs)
 app.register_blueprint(routes.search)
 app.register_blueprint(routes.users)
 
-def validate_auth_token(auth_token):
-    if auth_token is None or auth_token == "" or auth_token == 'not required':
-        return False
-    auth_record = db.session.query(AuthTokens).filter(AuthTokens.auth_token == auth_token).filter(AuthTokens.expiration > datetime.utcnow()).first()
-    
-    return auth_record
 
 if __name__ == "__main__":
     create_all()

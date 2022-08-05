@@ -3,7 +3,7 @@ import flask
 from db import db
 from datetime import datetime
 from models.app_users import AppUsers
-from models.activate_email_tokens import ActivateEmailTokens, ActivateEmailTokensSchema
+from models.activate_email_tokens import ActivateEmailTokens
 from lib.authenticate import authenticate_return_auth
 from util.send_email import send_email
 
@@ -20,5 +20,4 @@ def email_activate(req:flask.Request, auth_info) -> flask.Response:
 
     send_email(email, "Thank you for activating your account!", f"{token.token}")
     
-
     return jsonify("email sent!")

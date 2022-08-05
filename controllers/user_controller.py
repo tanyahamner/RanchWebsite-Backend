@@ -1,4 +1,3 @@
-from datetime import datetime
 from flask_bcrypt import generate_password_hash
 from flask import jsonify
 import flask
@@ -29,8 +28,6 @@ def user_activate(req:flask.Request, user_id, auth_info) -> flask.Response:
 
     return jsonify(f'User with user_id {user_id} not found'), 404
 
-    return("Request must be in JSON format"), 400
-
 
 @authenticate_return_auth
 def user_add(req:flask.Request, auth_info) -> flask.Response:
@@ -43,7 +40,7 @@ def user_add(req:flask.Request, auth_info) -> flask.Response:
     active = post_data.get('active')
     org_id = post_data.get('org_id')
     role = post_data.get('role')
-    print(role)
+
     if (role == None or role in ['super-admin', 'admin', 'user']):
         role = 'user'
         
@@ -100,9 +97,8 @@ def user_deactivate(req:flask.Request, user_id, auth_info) -> flask.Response:
 
         return jsonify(user_schema.dump(user_data))
 
+    else:
         return jsonify(f'User with user_id {user_id} not found'), 404
-    
-    return("Request must be in JSON format"), 400
 
 
 @authenticate_return_auth
