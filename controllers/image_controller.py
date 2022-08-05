@@ -3,8 +3,7 @@ import flask
 import glob, os
 import uuid
 from db import db
-from models.app_users import AppUsers, user_schema
-from models.pic_reference import PicReferences, pic_schema
+from models.pic_reference import PicReferences
 from PIL import Image
 from lib.authenticate import authenticate_return_auth
 import base64
