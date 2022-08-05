@@ -12,9 +12,11 @@ class AppUsers(db.Model):
     first_name = db.Column(db.String(), nullable = False)
     last_name = db.Column(db.String(), nullable = False)
     email = db.Column(db.String(), nullable = False, unique = True)
+    phone = db.Column(db.String())
     password = db.Column(db.String(), nullable = False)
     active = db.Column(db.Boolean(), nullable=False, default=False)
     org_id = db.Column(UUID(as_uuid=True), db.ForeignKey('Organizations.org_id'), nullable=False)
+    organization = db.relationship('Organizations', backref=db.backref('AppUsers', lazy=True))
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     role = db.Column(db.String(), default='user', nullable=False)
     auth = db.relationship('AuthTokens', backref = 'user')
@@ -33,7 +35,7 @@ class AppUsers(db.Model):
 class AppUsersSchema(ma.Schema):
     class Meta:
         fields = ['user_id','first_name', 'last_name', 'email', 'password', 'phone', 'created_date', 'org_id', 'organization', 'role', 'active']
-    organization = ma.fields.Nested(OrganizationsSchema(only=("name","active")))
+    organization = ma.fields.Nested(OrganizationsSchema(only=("org_id", "name","active")))
     
 user_schema = AppUsersSchema()
 users_schema = AppUsersSchema(many=True)
