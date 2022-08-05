@@ -13,6 +13,6 @@ def get_objects_by_search(req:flask.Request, search_term, auth_info) -> flask.Re
         return jsonify("Unauthorized"), 403
     
     search_results = {}
-    search_results["organizations"] = controllers.organization_controller.organizations_get_by_search(req, search_term, True, auth_info)
+    search_results["organizations"] = controllers.organization_controller.organization_get_by_search(req, search_term, True, auth_info)
     search_results["users"] = controllers.user_controller.users_get_by_search(req, search_term, True, auth_info)
     return jsonify(search_results)

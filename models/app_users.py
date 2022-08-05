@@ -12,6 +12,7 @@ class AppUsers(db.Model):
     first_name = db.Column(db.String(), nullable = False)
     last_name = db.Column(db.String(), nullable = False)
     email = db.Column(db.String(), nullable = False, unique = True)
+    phone = db.Column(db.String())
     password = db.Column(db.String(), nullable = False)
     active = db.Column(db.Boolean(), nullable=False, default=False)
     org_id = db.Column(UUID(as_uuid=True), db.ForeignKey('Organizations.org_id'), nullable=False)
