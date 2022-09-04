@@ -1,15 +1,17 @@
 import functools
-from flask import Response
+import typing
+from collections.abc import Callable
+from flask import Response, request, Request
 from db import db
-from models.auth_tokens import AuthTokens
+from models.auth_tokens import auth_token_schema, AuthTokens, AuthTokensSchema
 from datetime import datetime
 
 
+
 def validate_auth_token(arg_zero):
-    auth_token = arg_zero.headers.get("auth_token")
-    if auth_token is None or auth_token == "" or auth_token=='undefined':
+    auth_token = arg_zero.headers["auth_token"]
+    if auth_token is None or auth_token == "" or auth_token == 'not required' or auth_token=='undefined':
         return False
-        
     auth_record = db.session.query(
         AuthTokens
     ).filter(

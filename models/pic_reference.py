@@ -1,4 +1,6 @@
+from flask_marshmallow import Marshmallow
 from sqlalchemy.dialects.postgresql import UUID
+import uuid
 from db import db
 import marshmallow as ma
 
