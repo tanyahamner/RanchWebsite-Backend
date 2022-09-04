@@ -1,27 +1,25 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 import sys
 
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-import uuid
 from db import db, init_db
 from flask_marshmallow import Marshmallow
 
-from models.organizations import organization_schema, organizations_schema, Organizations, OrganizationsSchema
-from models.app_users import user_schema, users_schema, AppUsers, AppUsersSchema
-from models.auth_tokens import auth_token_schema, AuthTokens, AuthTokensSchema
+from models.organizations import Organizations
+from models.app_users import AppUsers
+from models.auth_tokens import AuthTokens
 
 from util.validate_uuid4 import validate_uuid4
 from util.foundation_utils import strip_phone
 
 import os
-from os.path import abspath, dirname, isfile, join
-from datetime import datetime, timedelta
-from util.date_range import DateRange
+from os.path import abspath, dirname, join
+from datetime import datetime
 import routes
-
+import config
 
 def create_all():
     with app.app_context():
@@ -33,16 +31,11 @@ def create_all():
         org_data = db.session.query(Organizations).filter(Organizations.name == "DevPipeline").first()
         if org_data == None:
             print("DevPipeline organization not found. Creating DevPipeline Organization in database...")
-            name = 'DevPipeline'
-            address = '518 East 800 North, Suite C'
-            city = 'Orem'
-            state = 'Utah'
-            zip_code = '84097'
-            phone = '3853090807'
+            
             active = True
             created_date = datetime.now()
             
-            org_data = Organizations(name, address, city, state, zip_code, phone, created_date, active)
+            org_data = Organizations(config.org_name, config.org_address, config.org_city, config.org_state, config.org_zip_code, config.org_phone, created_date, active)
 
             db.session.add(org_data)
             db.session.commit()
@@ -50,12 +43,10 @@ def create_all():
             print("DevPipeline Organization found!")
         
         print("Querying for Super Admin user...")
-        user_data = db.session.query(AppUsers).filter(AppUsers.email == 'foundation-admin@devpipeline.com').first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.email == config.su_email).first()
         if user_data == None:
-            print("Super Admin not found! Creating foundation-admin@devpipeline user...")
-            first_name = 'Super'
-            last_name = 'Admin'
-            email = 'foundation-admin@devpipeline.com'
+            print(f"Super Admin not found! Creating Super Admin user ({config.su_email})...")
+            
             newpw = ''
             while newpw == '' or newpw is None:
                 newpw = input(' Enter a password for Super Admin:')
@@ -64,7 +55,7 @@ def create_all():
             role = 'super-admin'
             
             hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
-            record = AppUsers(first_name=first_name, last_name=last_name, email=email, phone=phone, password=hashed_password, org_id=org_id, role=role, active=True)
+            record = AppUsers(first_name=config.su_first_name, last_name=config.su_last_name, email=config.su_email, phone=config.su_phone, password=hashed_password, org_id=org_id, role=role, active=True)
 
             db.session.add(record)
             db.session.commit()
@@ -88,8 +79,8 @@ def create_app(config_file=None):
    """
    app = Flask(__name__)
    database_host = "127.0.0.1:5432"
-   database_name = "foundation"
-   app.config['SQLALCHEMY_DATABASE_URI'] = f'postgres://{database_host}/{database_name}'
+   database_name = config.database_name
+   app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI", f'postgres://{database_host}/{database_name}')
    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
    
    init_db(app, db)
@@ -150,12 +141,6 @@ app.register_blueprint(routes.orgs)
 app.register_blueprint(routes.search)
 app.register_blueprint(routes.users)
 
-def validate_auth_token(auth_token):
-    if auth_token is None or auth_token == "" or auth_token == 'not required':
-        return False
-    auth_record = db.session.query(AuthTokens).filter(AuthTokens.auth_token == auth_token).filter(AuthTokens.expiration > datetime.utcnow()).first()
-    
-    return auth_record
 
 if __name__ == "__main__":
     create_all()

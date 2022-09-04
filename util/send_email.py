@@ -1,6 +1,6 @@
 from sendgrid import SendGridAPIClient
 import os
-from sendgrid.helpers.mail import Mail, Email, To, Content
+from sendgrid.helpers.mail import Mail
 
 API_KEY = os.environ.get('SENDGRID_API_KEY', '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')
 FROM_EMAIL = os.environ.get('SENDGRID_FROM_EMAIL', 'foundation@devpipeline.com')
