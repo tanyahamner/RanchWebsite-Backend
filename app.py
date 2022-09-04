@@ -19,7 +19,7 @@ import os
 from os.path import abspath, dirname, join
 from datetime import datetime
 import routes
-
+import config
 
 def create_all():
     with app.app_context():
@@ -31,16 +31,11 @@ def create_all():
         org_data = db.session.query(Organizations).filter(Organizations.name == "DevPipeline").first()
         if org_data == None:
             print("DevPipeline organization not found. Creating DevPipeline Organization in database...")
-            name = 'DevPipeline'
-            address = '518 East 800 North, Suite C'
-            city = 'Orem'
-            state = 'Utah'
-            zip_code = '84097'
-            phone = '3853090807'
+            
             active = True
             created_date = datetime.now()
             
-            org_data = Organizations(name, address, city, state, zip_code, phone, created_date, active)
+            org_data = Organizations(config.org_name, config.org_address, config.org_city, config.org_state, config.org_zip_code, config.org_phone, created_date, active)
 
             db.session.add(org_data)
             db.session.commit()
@@ -48,12 +43,10 @@ def create_all():
             print("DevPipeline Organization found!")
         
         print("Querying for Super Admin user...")
-        user_data = db.session.query(AppUsers).filter(AppUsers.email == 'foundation-admin@devpipeline.com').first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.email == config.su_email).first()
         if user_data == None:
-            print("Super Admin not found! Creating foundation-admin@devpipeline user...")
-            first_name = 'Super'
-            last_name = 'Admin'
-            email = 'foundation-admin@devpipeline.com'
+            print(f"Super Admin not found! Creating Super Admin user ({config.su_email})...")
+            
             newpw = ''
             while newpw == '' or newpw is None:
                 newpw = input(' Enter a password for Super Admin:')
@@ -62,7 +55,7 @@ def create_all():
             role = 'super-admin'
             
             hashed_password = bcrypt.generate_password_hash(password).decode("utf8")
-            record = AppUsers(first_name=first_name, last_name=last_name, email=email, phone=phone, password=hashed_password, org_id=org_id, role=role, active=True)
+            record = AppUsers(first_name=config.su_first_name, last_name=config.su_last_name, email=config.su_email, phone=config.su_phone, password=hashed_password, org_id=org_id, role=role, active=True)
 
             db.session.add(record)
             db.session.commit()
@@ -86,7 +79,7 @@ def create_app(config_file=None):
    """
    app = Flask(__name__)
    database_host = "127.0.0.1:5432"
-   database_name = "foundation"
+   database_name = config.database_name
    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI", f'postgres://{database_host}/{database_name}')
    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
    
