@@ -28,6 +28,7 @@ psycopg2-binary = "==2.8.6"
 sendgrid = "*"
 pillow = "*"
 piexif = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.8"
