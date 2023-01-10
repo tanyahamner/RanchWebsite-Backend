@@ -33,7 +33,7 @@ def user_delete(user_id) -> Response:
 
 @users.route("/user/activate/<user_id>", methods=["PUT"])
 def user_activate(user_id) -> Response:
-    return controllers.user_controller(request, user_id)
+    return controllers.user_activate(request, user_id)
 
 @users.route("/user/deactivate/<user_id>", methods=["PUT"])
 def user_deactivate(user_id) -> Response:
