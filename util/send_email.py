@@ -7,7 +7,7 @@ SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL')
 
 def send_email(to_email, subject, content):
     if not SENDGRID_API_KEY and not SENDGRID_FROM_EMAIL:
-        return 'Exception Occured: Cannot send email without .env varibles'
+        return 'Exception Occured: Cannot send email without .env variables'
     sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
     message = Mail(
         from_email=SENDGRID_FROM_EMAIL,

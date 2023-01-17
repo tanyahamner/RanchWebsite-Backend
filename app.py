@@ -92,11 +92,11 @@ def create_app(config_file=None):
    app = Flask(__name__)
    DATABASE_HOST = os.getenv('DATABASE_HOST')
    if not DATABASE_HOST:
-      return 'Unable to find DATABASE_HOST varible'
+      return 'Unable to find DATABASE_HOST variable'
 
    DATABASE_NAME = os.getenv('DATABASE_NAME')
    if not DATABASE_NAME:
-      return 'unable to finde DATABASE_NAME varible'
+      return 'unable to finde DATABASE_NAME variable'
 
    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgres://{DATABASE_HOST}/{DATABASE_NAME}'
    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
