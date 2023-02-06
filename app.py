@@ -32,16 +32,16 @@ def create_all():
         for arg in range(len(sys.argv[1:])):
             print(sys.argv[arg + 1])
 
-        print("Querying for DevPipeline organization...")
-        org_data = db.session.query(Organizations).filter(Organizations.name == "DevPipeline").first()
+        print("Querying for Hamner_Livestock organization...")
+        org_data = db.session.query(Organizations).filter(Organizations.name == "Hamner_Livestock").first()
         if org_data == None:
-            print("DevPipeline organization not found. Creating DevPipeline Organization in database...")
-            name = 'DevPipeline'
-            address = '518 East 800 North, Suite C'
-            city = 'Orem'
-            state = 'Utah'
-            zip_code = '84097'
-            phone = '3853090807'
+            print("Hamner_Livestock organization not found. Creating Hamner_Livestock Organization in database...")
+            name = 'Hamner_Livestock'
+            address = '320 Spring Gulch Road'
+            city = 'Pinedale'
+            state = 'WY'
+            zip_code = '82941'
+            phone = '3076798749'
             active = True
             created_date = datetime.now()
             
@@ -50,15 +50,15 @@ def create_all():
             db.session.add(org_data)
             db.session.commit()
         else:
-            print("DevPipeline Organization found!")
+            print("Hamner Livestock Organization found!")
         
         print("Querying for Super Admin user...")
-        user_data = db.session.query(AppUsers).filter(AppUsers.email == 'foundation-admin@devpipeline.com').first()
+        user_data = db.session.query(AppUsers).filter(AppUsers.email == 'tanyahamner@yahoo.com').first()
         if user_data == None:
-            print("Super Admin not found! Creating foundation-admin@devpipeline user...")
+            print("Super Admin not found! Creating tanyahamner@yahoo user...")
             first_name = 'Super'
             last_name = 'Admin'
-            email = 'foundation-admin@devpipeline.com'
+            email = 'tanyahamner@yahoo.com'
             newpw = ''
             while newpw == '' or newpw is None:
                 newpw = input(' Enter a password for Super Admin:')
@@ -74,6 +74,9 @@ def create_all():
         else:
             print("Super Admin user found!")
 
+
+        
+       
 def create_app(config_file=None):
    """
    Default application factory
@@ -158,6 +161,13 @@ app.register_blueprint(routes.images)
 app.register_blueprint(routes.orgs)
 app.register_blueprint(routes.search)
 app.register_blueprint(routes.users)
+
+app.register_blueprint(routes.sheeps)
+app.register_blueprint(routes.lambs)
+app.register_blueprint(routes.meat)
+app.register_blueprint(routes.pastures)
+app.register_blueprint(routes.registrations)
+app.register_blueprint(routes.wool)
 
 def validate_auth_token(auth_token):
     if auth_token is None or auth_token == "" or auth_token == 'not required':
